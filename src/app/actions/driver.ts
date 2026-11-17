@@ -2,8 +2,9 @@
 
 import { revalidatePath } from "next/cache";
 import { requireUser } from "@/lib/auth";
-import { and, eq } from "drizzle-orm";
+import { and, count, eq, inArray, isNull } from "drizzle-orm";
 import { db, deliveries } from "@/lib/db";
+import { MAX_ACTIVE_PER_DRIVER } from "@/lib/pricing";
 
 export async function driverUpdateStatus(formData: FormData) {
   const driver = await requireUser("DRIVER");
@@ -25,4 +26,32 @@ export async function driverUpdateStatus(formData: FormData) {
     await db.update(deliveries).set({ status: "FAILED", failReason: reason }).where(eq(deliveries.id, id));
   }
   revalidatePath("/livreur");
+}
+
+export type ClaimState = { error?: string } | undefined;
+
+/** Le livreur accepte lui-même une course prête et sans livreur. */
+export async function claimDelivery(_prev: ClaimState, formData: FormData): Promise<ClaimState> {
+  const driver = await requireUser("DRIVER");
+  const id = String(formData.get("id"));
+
+  const [{ n }] = await db
+    .select({ n: count() })
+    .from(deliveries)
+    .where(and(eq(deliveries.driverId, driver.id), inArray(deliveries.status, ["ASSIGNED", "PICKED_UP"])));
+  if (n >= MAX_ACTIVE_PER_DRIVER) {
+    return { error: `max:${MAX_ACTIVE_PER_DRIVER}` };
+  }
+
+  // La condition "driverId IS NULL" garantit qu'un seul livreur obtient la course.
+  const taken = await db
+    .update(deliveries)
+    .set({ driverId: driver.id, status: "ASSIGNED", assignedAt: new Date() })
+    .where(and(eq(deliveries.id, id), eq(deliveries.status, "READY"), isNull(deliveries.driverId)))
+    .returning({ id: deliveries.id });
+  // Si la course est déjà prise, on garde la page telle quelle pour afficher le message ;
+  // elle disparaîtra au prochain rafraîchissement automatique.
+  if (taken.length === 0) return { error: "taken" };
+  revalidatePath("/livreur", "layout");
+  return undefined;
 }

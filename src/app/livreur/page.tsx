@@ -1,6 +1,8 @@
+import Link from "next/link";
 import { driverUpdateStatus } from "@/app/actions/driver";
 import { AutoRefresh, SubmitButton } from "@/components/client";
-import { AppHeader, Page, Stat, StatusBadge } from "@/components/ui";
+import { Page, Stat, StatusBadge } from "@/components/ui";
+import { driverPayOf } from "@/lib/pricing";
 import { requireUser } from "@/lib/auth";
 import { and, asc, eq, gte, inArray } from "drizzle-orm";
 import { db, deliveries } from "@/lib/db";
@@ -30,8 +32,6 @@ export default async function DriverPage() {
   const cashToday = doneToday.reduce((s, d) => s + d.amountToCollect, 0);
 
   return (
-    <>
-      <AppHeader links={[{ href: "/livreur", label: t("d.title") }]} />
       <Page>
         <AutoRefresh seconds={20} />
         <h1 className="display text-3xl">{t("d.hello")} {me.name.split(" ")[0]} 🛵</h1>
@@ -40,7 +40,12 @@ export default async function DriverPage() {
           <Stat label={t("d.done24")} value={doneToday.length} hint={`${t("d.cash")} : ${fcfa(cashToday)}`} />
         </div>
 
-        {active.length === 0 && <div className="card text-center text-sm text-muted">{t("d.none")}</div>}
+        {active.length === 0 && (
+          <div className="card space-y-3 text-center text-sm text-muted">
+            <p>{t("d.none")}</p>
+            <Link href="/livreur/demandes" className="btn-primary">{t("d.requests")} →</Link>
+          </div>
+        )}
 
         {active.map((d, idx) => {
           const m = d.merchant;
@@ -50,6 +55,10 @@ export default async function DriverPage() {
               <div className="flex items-center justify-between">
                 <span className="font-mono text-xs text-muted">{d.code}</span>
                 <StatusBadge status={d.status} />
+              </div>
+              <div className="flex items-center justify-between rounded-2xl bg-forest px-4 py-3 text-white">
+                <span className="text-sm text-white/70">{t("d.youEarn")}</span>
+                <span className="display text-xl text-brand-500">{fcfa(driverPayOf(d))}</span>
               </div>
 
               <div className={`rounded-2xl p-4 transition ${picked ? "bg-cream opacity-60" : "bg-brand-50 ring-2 ring-brand-600/30"}`}>
@@ -111,6 +120,5 @@ export default async function DriverPage() {
           );
         })}
       </Page>
-    </>
   );
 }

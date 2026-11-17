@@ -72,6 +72,9 @@ export const deliveries = pgTable(
 
     distanceKm: doublePrecision("distance_km"),
     price: integer("price"), // FCFA, calculé selon la distance
+    driverPay: integer("driver_pay"), // FCFA, rémunération du livreur pour cette course
+    driverPaid: boolean("driver_paid").notNull().default(false),
+    driverPaidAt: timestamp("driver_paid_at", { withTimezone: true }),
 
     status: deliveryStatusEnum("status").notNull().default("WAITING_LOCATION"),
     failReason: text("fail_reason"),
@@ -90,6 +93,22 @@ export const deliveries = pgTable(
     index("deliveries_status_idx").on(t.status),
   ],
 );
+
+/** Demandes et liens de réinitialisation du mot de passe. */
+export const passwordResets = pgTable("password_resets", {
+  id: id(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id),
+  tokenHash: text("token_hash").unique(), // vide tant que l'admin n'a pas créé le lien
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  expiresAt: timestamp("expires_at", { withTimezone: true }),
+  usedAt: timestamp("used_at", { withTimezone: true }),
+});
+
+export const passwordResetsRelations = relations(passwordResets, ({ one }) => ({
+  user: one(users, { fields: [passwordResets.userId], references: [users.id] }),
+}));
 
 export const usersRelations = relations(users, ({ many }) => ({
   merchantDeliveries: many(deliveries, { relationName: "merchant" }),

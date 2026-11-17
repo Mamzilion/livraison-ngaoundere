@@ -4,9 +4,10 @@ import bcrypt from "bcryptjs";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { eq } from "drizzle-orm";
-import { db, users } from "@/lib/db";
+import { and, eq, gt, isNull } from "drizzle-orm";
+import { db, passwordResets, users } from "@/lib/db";
 import { normalizePhone } from "@/lib/format";
+import { hashToken } from "@/lib/tokens";
 import { SESSION_COOKIE, homeFor, sessionCookieOptions, signSession } from "@/lib/session";
 
 export type FormState = { error?: string; ok?: string } | undefined;
@@ -76,4 +77,46 @@ export async function registerMerchant(_prev: FormState, formData: FormData): Pr
 export async function logout() {
   (await cookies()).delete(SESSION_COOKIE);
   redirect("/connexion");
+}
+
+/** L'utilisateur signale qu'il a oublié son mot de passe : une demande apparaît chez l'admin. */
+export async function requestPasswordReset(_prev: FormState, formData: FormData): Promise<FormState> {
+  const phone = normalizePhone(String(formData.get("phone") ?? ""));
+  if (!phone) return { error: "invalidPhone" };
+  const user = await db.query.users.findFirst({ where: eq(users.phone, phone) });
+  if (user && user.active) {
+    const recent = await db.query.passwordResets.findFirst({
+      where: and(
+        eq(passwordResets.userId, user.id),
+        isNull(passwordResets.tokenHash), // une demande encore en attente de l'admin
+        isNull(passwordResets.usedAt),
+        gt(passwordResets.createdAt, new Date(Date.now() - 3600 * 1000)),
+      ),
+    });
+    if (!recent) await db.insert(passwordResets).values({ userId: user.id });
+  }
+  // Même réponse que le compte existe ou non (on ne révèle pas quels numéros sont inscrits).
+  return { ok: "sent" };
+}
+
+export async function resetPassword(_prev: FormState, formData: FormData): Promise<FormState> {
+  const token = String(formData.get("token") ?? "");
+  const password = String(formData.get("password") ?? "");
+  const confirm = String(formData.get("confirm") ?? "");
+  if (password.length < 6) return { error: "tooShort" };
+  if (password !== confirm) return { error: "mismatch" };
+
+  const reset = await db.query.passwordResets.findFirst({
+    where: and(eq(passwordResets.tokenHash, hashToken(token)), isNull(passwordResets.usedAt)),
+    with: { user: true },
+  });
+  if (!reset || !reset.expiresAt || reset.expiresAt < new Date() || !reset.user.active) return { error: "expired" };
+
+  await db
+    .update(users)
+    .set({ passwordHash: await bcrypt.hash(password, 10) })
+    .where(eq(users.id, reset.userId));
+  await db.update(passwordResets).set({ usedAt: new Date() }).where(eq(passwordResets.userId, reset.userId));
+  await openSession(reset.user);
+  redirect(homeFor(reset.user.role));
 }

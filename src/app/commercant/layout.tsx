@@ -6,10 +6,10 @@ export default async function MerchantLayout({ children }: { children: React.Rea
   return (
     <>
       <AppHeader
-        links={[
-          { href: "/commercant", label: t("m.navCourses") },
-          { href: "/commercant/nouvelle", label: t("m.navNew") },
-          { href: "/commercant/profil", label: t("m.navShop") },
+        items={[
+          { href: "/commercant", label: t("m.tabCourses"), icon: "list", exact: true },
+          { href: "/commercant/nouvelle", label: t("m.tabNew"), icon: "plus" },
+          { href: "/commercant/profil", label: t("m.tabShop"), icon: "store" },
         ]}
       />
       {children}

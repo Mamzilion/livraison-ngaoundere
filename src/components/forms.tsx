@@ -1,9 +1,9 @@
 "use client";
 
 import { useActionState } from "react";
-import { login, registerMerchant } from "@/app/actions/auth";
+import { login, registerMerchant, requestPasswordReset, resetPassword } from "@/app/actions/auth";
 import { createDelivery, updatePickup } from "@/app/actions/merchant";
-import { adminSetDropLocation, createDriver } from "@/app/actions/admin";
+import { adminSetDropLocation, createDriver, createResetLink } from "@/app/actions/admin";
 import { PRICING } from "@/lib/pricing";
 import { useT } from "./i18n";
 import { LocateFields, SubmitButton } from "./client";
@@ -148,6 +148,86 @@ export function DropCoordsForm({ id }: { id: string }) {
       <input className="input" name="coords" placeholder="Coordonnées : 7.3220, 13.5840" />
       <Messages state={state} />
       <SubmitButton className="btn-ghost w-full">Enregistrer la position</SubmitButton>
+    </form>
+  );
+}
+
+export function ForgotForm({ supportPhone }: { supportPhone?: string }) {
+  const [state, action] = useActionState(requestPasswordReset, undefined);
+  const t = useT();
+  if (state?.ok) {
+    return (
+      <div className="space-y-4">
+        <div className="animate-pop rounded-3xl bg-emerald-50 p-5 text-center text-sm text-emerald-900">
+          <div className="text-3xl">📨</div>
+          <p className="mt-2">{t("auth.forgotSent")}</p>
+        </div>
+        {supportPhone && (
+          <a href={`https://wa.me/${supportPhone}`} target="_blank" rel="noopener" className="btn-whatsapp w-full">
+            {t("auth.contactAdmin")}
+          </a>
+        )}
+      </div>
+    );
+  }
+  return (
+    <form action={action} className="space-y-4">
+      <div>
+        <label className="label" htmlFor="phone">{t("common.phone")}</label>
+        <input className="input" id="phone" name="phone" inputMode="tel" placeholder="677 11 22 33" required />
+      </div>
+      {state?.error && <Messages state={{ error: t("auth.invalidPhone") }} />}
+      <SubmitButton pendingText={t("common.wait")}>{t("auth.forgotSend")}</SubmitButton>
+    </form>
+  );
+}
+
+export function ResetForm({ token }: { token: string }) {
+  const [state, action] = useActionState(resetPassword, undefined);
+  const t = useT();
+  const errors: Record<string, Parameters<typeof t>[0]> = {
+    tooShort: "auth.tooShort",
+    mismatch: "auth.mismatch",
+    expired: "auth.expired",
+  };
+  return (
+    <form action={action} className="space-y-4">
+      <input type="hidden" name="token" value={token} />
+      <div>
+        <label className="label" htmlFor="password">{t("auth.newPassword")}</label>
+        <input className="input" id="password" name="password" type="password" minLength={6} required />
+      </div>
+      <div>
+        <label className="label" htmlFor="confirm">{t("auth.confirm")}</label>
+        <input className="input" id="confirm" name="confirm" type="password" minLength={6} required />
+      </div>
+      {state?.error && <Messages state={{ error: t(errors[state.error] ?? "auth.expired") }} />}
+      <SubmitButton pendingText={t("common.wait")}>{t("auth.resetSubmit")}</SubmitButton>
+    </form>
+  );
+}
+
+/** Admin : crée un lien de réinitialisation et l'envoie sur WhatsApp. */
+export function ResetLinkForm({ userId }: { userId: string }) {
+  const [state, action] = useActionState(createResetLink, undefined);
+  if (state?.link && state.phone) {
+    const msg = `Bonjour ${state.name}, voici votre lien Babana pour choisir un nouveau mot de passe (valable 24 h) :\n${state.link}`;
+    return (
+      <a
+        href={`https://wa.me/${state.phone}?text=${encodeURIComponent(msg)}`}
+        target="_blank"
+        rel="noopener"
+        className="btn-whatsapp animate-pop px-3 py-2 text-xs"
+      >
+        Envoyer le lien
+      </a>
+    );
+  }
+  return (
+    <form action={action}>
+      <input type="hidden" name="userId" value={userId} />
+      <SubmitButton className="btn-ghost px-3 py-2 text-xs" pendingText="…">Mot de passe</SubmitButton>
+      {state?.error && <p className="mt-1 text-xs text-rose-700">{state.error}</p>}
     </form>
   );
 }

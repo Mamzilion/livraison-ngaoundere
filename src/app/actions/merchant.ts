@@ -7,7 +7,7 @@ import { requireUser } from "@/lib/auth";
 import { and, eq, inArray, isNotNull } from "drizzle-orm";
 import { db, deliveries, users } from "@/lib/db";
 import { normalizePhone, randomCode, randomToken } from "@/lib/format";
-import { computePrice, isNightNow, roadDistanceKm } from "@/lib/pricing";
+import { isNightNow, quote, roadDistanceKm } from "@/lib/pricing";
 import type { FormState } from "./auth";
 
 const deliverySchema = z.object({
@@ -95,7 +95,7 @@ export async function updatePickup(_prev: FormState, formData: FormData): Promis
     const km = roadDistanceKm(parsed.data.pickupLat, parsed.data.pickupLng, d.dropLat!, d.dropLng!);
     await db
       .update(deliveries)
-      .set({ distanceKm: km, price: computePrice(km, { heavy: d.heavy, night: d.night }) })
+      .set(quote(km, { heavy: d.heavy, night: d.night }))
       .where(eq(deliveries.id, d.id));
   }
   revalidatePath("/commercant");

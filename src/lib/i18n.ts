@@ -128,10 +128,40 @@ const dict = {
   },
   "auth.submitRegister": { fr: "Créer mon compte commerçant", ff: "Waɗu konte am" },
 
+  "auth.forgot": { fr: "Mot de passe oublié ?", ff: "A yejjitii batu sirru maa ?" },
+  "auth.forgotTitle": { fr: "Mot de passe oublié", ff: "Batu sirru yejjitaaɗo" },
+  "auth.forgotText": {
+    fr: "Entrez votre numéro. L'équipe Babana vérifie votre compte et vous envoie sur WhatsApp un lien pour choisir un nouveau mot de passe.",
+    ff: "Winndu telefon maa. Babana ndaarta konte maa, nelda ma liŋ e WhatsApp ngam a suɓa batu sirru hesɗo.",
+  },
+  "auth.forgotSend": { fr: "Envoyer la demande", ff: "Neldu ɗaɓɓaande" },
+  "auth.forgotSent": {
+    fr: "Demande envoyée. Vous recevrez bientôt un lien sur WhatsApp. Si rien n'arrive, écrivez-nous.",
+    ff: "Ɗaɓɓaande neldaama. A heɓan liŋ e WhatsApp jooni. So hay huunde waraali, winndan min.",
+  },
+  "auth.contactAdmin": { fr: "Écrire à Babana sur WhatsApp", ff: "Winndan Babana e WhatsApp" },
+  "auth.invalidPhone": { fr: "Numéro de téléphone invalide (ex. 677 11 22 33).", ff: "Telefon ngon moƴƴaani (misal 677 11 22 33)." },
+  "auth.resetTitle": { fr: "Nouveau mot de passe", ff: "Batu sirru hesɗo" },
+  "auth.newPassword": { fr: "Nouveau mot de passe", ff: "Batu sirru hesɗo" },
+  "auth.confirm": { fr: "Confirmez le mot de passe", ff: "Winndito batu sirru" },
+  "auth.resetSubmit": { fr: "Enregistrer et me connecter", ff: "Winndu, naatu" },
+  "auth.tooShort": { fr: "Le mot de passe doit faire au moins 6 caractères.", ff: "Batu sirru foti heewde alkule 6." },
+  "auth.mismatch": { fr: "Les deux mots de passe sont différents.", ff: "Batuuji sirru ɗiɗi ngondaa gooto." },
+  "auth.expired": { fr: "Ce lien n'est plus valable. Refaites une demande.", ff: "Liŋ ngal huutortaake kadi. Ɗaɓɓito." },
+  "auth.backLogin": { fr: "← Retour à la connexion", ff: "← Rutto naatgol" },
+
+  // ——— Navigation ———
+  "nav.back": { fr: "← Retour", ff: "← Rutto" },
+  "nav.mySpace": { fr: "Mon espace", ff: "Konte am" },
+  "nav.site": { fr: "Site Babana", ff: "Hello Babana" },
+
   // ——— Commerçant ———
   "m.navCourses": { fr: "Mes courses", ff: "Naɓe am" },
   "m.navNew": { fr: "+ Nouvelle course", ff: "+ Naɓgol hesngol" },
   "m.navShop": { fr: "Mon commerce", ff: "Bitik am" },
+  "m.tabCourses": { fr: "Courses", ff: "Naɓe" },
+  "m.tabNew": { fr: "Nouvelle", ff: "Hesngol" },
+  "m.tabShop": { fr: "Commerce", ff: "Bitik" },
   "m.hello": { fr: "Bonjour", ff: "Jam" },
   "m.newShort": { fr: "+ Course", ff: "+ Naɓgol" },
   "m.noGps": { fr: "La position GPS de votre commerce n'est pas encore enregistrée : le prix ne peut pas être calculé automatiquement.", ff: "Nokkuure GPS bitik maa winndaaka tawo : coggu limtataake hoore mum." },
@@ -224,6 +254,34 @@ const dict = {
   "d.r3": { fr: "Client a refusé le colis", ff: "Soodoowo salii kaake" },
   "d.r4": { fr: "Commerce fermé", ff: "Bitik uddaama" },
   "d.r5": { fr: "Adresse introuvable", ff: "Nokkuure yiytaaka" },
+  "d.tabCourses": { fr: "Courses", ff: "Naɓe" },
+  "d.tabRequests": { fr: "Demandes", ff: "Ɗaɓɓaaɗe" },
+  "d.tabEarnings": { fr: "Gains", ff: "Riba" },
+  "d.requests": { fr: "Demandes disponibles", ff: "Naɓe ɗe ngoodi" },
+  "d.requestsHint": {
+    fr: "Courses prêtes, sans livreur. Acceptez-en une : elle est à vous. La page se met à jour toute seule.",
+    ff: "Naɓe hebbiiɗe, naɓoowo walaa. Jaɓu gooto : ngol wonan ma. Hello ɗo hesɗitintoo hoore mum.",
+  },
+  "d.noRequests": { fr: "Aucune demande pour le moment.", ff: "Ɗaɓɓaande walaa jooni." },
+  "d.accept": { fr: "Accepter la course", ff: "Jaɓu naɓgol" },
+  "d.taken": { fr: "Un autre livreur a déjà pris cette course.", ff: "Naɓoowo goɗɗo jaɓii naɓgol ngol law." },
+  "d.max": {
+    fr: "Vous avez déjà {n} courses en cours. Terminez-en une avant d'en accepter une autre.",
+    ff: "A woodi naɓe {n} ɗe a waɗata. Timmin gooto ado a jaɓa goɗɗo.",
+  },
+  "d.youEarn": { fr: "Vous gagnez", ff: "A heɓan" },
+  "d.earnings": { fr: "Mes gains", ff: "Riba am" },
+  "d.today": { fr: "Aujourd'hui", ff: "Hannde" },
+  "d.week": { fr: "7 derniers jours", ff: "Balɗe 7 ɓennuɗe" },
+  "d.toBePaid": { fr: "À recevoir de Babana", ff: "Ceede ɗe Babana yoɓata ma" },
+  "d.alreadyPaid": { fr: "Déjà payé", ff: "Yoɓaama law" },
+  "d.payFormula": {
+    fr: "150 FCFA par course + 30 FCFA par km. +100 FCFA pour un colis lourd ou une course de nuit.",
+    ff: "150 FCFA e naɓgol kala + 30 FCFA e kilomeeter kala. +100 FCFA ngam kaake teddhuɗe maa naɓgol jemma.",
+  },
+  "d.history": { fr: "Courses livrées", ff: "Naɓe hewtinaaɗe" },
+  "d.paidLabel": { fr: "Payé", ff: "Yoɓaama" },
+  "d.unpaidLabel": { fr: "À recevoir", ff: "Ina sabbii" },
 } as const;
 
 export type DictKey = keyof typeof dict;

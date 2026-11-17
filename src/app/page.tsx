@@ -3,7 +3,9 @@ import { Faq, PriceCalculator } from "@/components/landing";
 import { LangSwitch } from "@/components/i18n";
 import { CountUp, Marquee, Reveal } from "@/components/motion";
 import { Logo } from "@/components/ui";
+import { getSession } from "@/lib/auth";
 import { getT } from "@/lib/i18n-server";
+import { homeFor } from "@/lib/session";
 
 function SectionHead({ n, label, title, dark = false }: { n: string; label: string; title: string; dark?: boolean }) {
   return (
@@ -74,6 +76,7 @@ function PhonePreview({ t }: { t: Awaited<ReturnType<typeof getT>> }) {
 
 export default async function Home() {
   const t = await getT();
+  const session = await getSession();
   const steps = [1, 2, 3, 4, 5].map((i) => ({
     t: t(`home.step${i}t` as Parameters<typeof t>[0]),
     d: t(`home.step${i}d` as Parameters<typeof t>[0]),
@@ -100,7 +103,11 @@ export default async function Home() {
           </nav>
           <div className="flex items-center gap-2">
             <LangSwitch />
-            <Link href="/connexion" className="btn-primary hidden !px-4 !py-2 sm:inline-flex">{t("common.login")}</Link>
+            {session ? (
+              <Link href={homeFor(session.role)} className="btn-primary !px-4 !py-2">{t("nav.mySpace")}</Link>
+            ) : (
+              <Link href="/connexion" className="btn-primary hidden !px-4 !py-2 sm:inline-flex">{t("common.login")}</Link>
+            )}
           </div>
         </div>
       </header>
@@ -122,7 +129,9 @@ export default async function Home() {
             <Link href="/inscription" className="btn-primary group !py-4">
               {t("home.ctaMerchant")} <span className="transition group-hover:translate-x-1">→</span>
             </Link>
-            <Link href="/connexion" className="btn-ghost !py-4">{t("home.ctaLogin")}</Link>
+            <Link href={session ? homeFor(session.role) : "/connexion"} className="btn-ghost !py-4">
+              {session ? t("nav.mySpace") : t("home.ctaLogin")}
+            </Link>
           </div>
         </div>
         <PhonePreview t={t} />

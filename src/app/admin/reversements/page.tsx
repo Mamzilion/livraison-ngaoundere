@@ -1,4 +1,5 @@
-import { settleMerchant } from "@/app/actions/admin";
+import { payDriver, settleMerchant } from "@/app/actions/admin";
+import { driverPayOf } from "@/lib/pricing";
 import { SubmitButton } from "@/components/client";
 import { Page } from "@/components/ui";
 import { requireUser } from "@/lib/auth";
@@ -14,6 +15,20 @@ export default async function SettlementsPage() {
     where: and(eq(deliveries.status, "DELIVERED"), eq(deliveries.settled, false)),
     with: { merchant: true },
   });
+
+  const unpaidDriver = await db.query.deliveries.findMany({
+    where: and(eq(deliveries.status, "DELIVERED"), eq(deliveries.driverPaid, false)),
+    with: { driver: true },
+  });
+  const byDriver = new Map<string, { name: string; phone: string; count: number; km: number; pay: number }>();
+  for (const d of unpaidDriver) {
+    if (!d.driver) continue;
+    const cur = byDriver.get(d.driver.id) ?? { name: d.driver.name, phone: d.driver.phone, count: 0, km: 0, pay: 0 };
+    cur.count += 1;
+    cur.km += d.distanceKm ?? 0;
+    cur.pay += driverPayOf(d);
+    byDriver.set(d.driver.id, cur);
+  }
 
   const byMerchant = new Map<string, { name: string; phone: string; count: number; collected: number; fees: number }>();
   for (const d of rows) {
@@ -32,7 +47,8 @@ export default async function SettlementsPage() {
 
   return (
     <Page>
-      <h1 className="display text-3xl">Reversements du jour</h1>
+      <h1 className="display text-3xl">Paiements</h1>
+      <h2 className="display pt-2 text-xl">Reversements aux commerçants</h2>
       <p className="text-sm text-stone-600">
         Montant à reverser = argent encaissé auprès des clients − prix des courses. Un montant négatif signifie que
         le commerçant nous doit les frais.
@@ -59,6 +75,29 @@ export default async function SettlementsPage() {
           </div>
         );
       })}
+
+      <h2 className="display pt-6 text-xl">Paie des livreurs</h2>
+      <p className="text-sm text-muted">
+        Rémunération des courses livrées et pas encore payées (150 FCFA + 30 FCFA/km, +100 FCFA colis lourd ou nuit).
+      </p>
+      {byDriver.size === 0 && <div className="card text-center text-sm text-muted">Rien à payer.</div>}
+      {[...byDriver.entries()].map(([driverId, r]) => (
+        <div key={driverId} className="card space-y-3">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <div className="font-semibold">{r.name}</div>
+              <div className="text-xs text-muted">
+                {displayPhone(r.phone)} · {r.count} course(s) · {Math.round(r.km * 10) / 10} km
+              </div>
+            </div>
+            <div className="display text-xl text-brand-700">{fcfa(r.pay)}</div>
+          </div>
+          <form action={payDriver}>
+            <input type="hidden" name="driverId" value={driverId} />
+            <SubmitButton className="btn-dark w-full">Marquer comme payé (MoMo/OM envoyé)</SubmitButton>
+          </form>
+        </div>
+      ))}
     </Page>
   );
 }

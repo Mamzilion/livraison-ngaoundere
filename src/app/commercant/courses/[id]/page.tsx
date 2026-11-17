@@ -2,7 +2,7 @@ import { and, eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import { cancelDelivery } from "@/app/actions/merchant";
 import { AutoRefresh, CopyButton, SubmitButton } from "@/components/client";
-import { Alert, Page, Row, StatusBadge } from "@/components/ui";
+import { Alert, BackLink, Page, Row, StatusBadge } from "@/components/ui";
 import { requireUser } from "@/lib/auth";
 import { appUrl } from "@/lib/config";
 import { db, deliveries } from "@/lib/db";
@@ -40,6 +40,7 @@ export default async function DeliveryPage({
   return (
     <Page>
       <AutoRefresh seconds={15} />
+      <BackLink href="/commercant" />
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="font-mono text-xs text-muted">{d.code}</p>

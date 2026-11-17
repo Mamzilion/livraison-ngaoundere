@@ -1,13 +1,15 @@
 "use server";
 
 import bcrypt from "bcryptjs";
-import { and, eq, inArray } from "drizzle-orm";
+import { and, eq, inArray, isNull } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { requireUser } from "@/lib/auth";
-import { db, deliveries, users } from "@/lib/db";
-import { normalizePhone } from "@/lib/format";
-import { computePrice, roadDistanceKm } from "@/lib/pricing";
+import { appUrl } from "@/lib/config";
+import { db, deliveries, passwordResets, users } from "@/lib/db";
+import { normalizePhone, randomToken } from "@/lib/format";
+import { hashToken } from "@/lib/tokens";
+import { computeDriverPay, computePrice, roadDistanceKm } from "@/lib/pricing";
 import type { FormState } from "./auth";
 
 export async function assignDriver(formData: FormData) {
@@ -59,6 +61,7 @@ export async function adminSetDropLocation(_prev: FormState, formData: FormData)
       locatedAt: new Date(),
       distanceKm: km,
       price: km != null ? computePrice(km, { heavy: d.heavy, night: d.night }) : null,
+      driverPay: km != null ? computeDriverPay(km, { heavy: d.heavy, night: d.night }) : null,
       status: d.status === "WAITING_LOCATION" ? "READY" : d.status,
     })
     .where(eq(deliveries.id, id));
@@ -111,4 +114,39 @@ export async function toggleUserActive(formData: FormData) {
   if (!u) return;
   await db.update(users).set({ active: !u.active }).where(eq(users.id, id));
   revalidatePath("/admin/comptes");
+}
+
+/** Marque comme payées toutes les courses livrées d'un livreur. */
+export async function payDriver(formData: FormData) {
+  await requireUser("ADMIN");
+  const driverId = String(formData.get("driverId"));
+  await db
+    .update(deliveries)
+    .set({ driverPaid: true, driverPaidAt: new Date() })
+    .where(and(eq(deliveries.driverId, driverId), eq(deliveries.status, "DELIVERED"), eq(deliveries.driverPaid, false)));
+  revalidatePath("/admin/reversements");
+}
+
+export type ResetLinkState = { error?: string; link?: string; phone?: string; name?: string } | undefined;
+
+/** Crée un lien de réinitialisation valable 24 h, à envoyer à l'utilisateur sur WhatsApp. */
+export async function createResetLink(_prev: ResetLinkState, formData: FormData): Promise<ResetLinkState> {
+  await requireUser("ADMIN");
+  const userId = String(formData.get("userId"));
+  const user = await db.query.users.findFirst({ where: eq(users.id, userId) });
+  if (!user) return { error: "Compte introuvable." };
+
+  const token = randomToken(24);
+  const expiresAt = new Date(Date.now() + 24 * 3600 * 1000);
+  // Une demande en attente de cet utilisateur est complétée ; sinon on en crée une.
+  const pending = await db.query.passwordResets.findFirst({
+    where: and(eq(passwordResets.userId, userId), isNull(passwordResets.tokenHash), isNull(passwordResets.usedAt)),
+  });
+  if (pending) {
+    await db.update(passwordResets).set({ tokenHash: hashToken(token), expiresAt }).where(eq(passwordResets.id, pending.id));
+  } else {
+    await db.insert(passwordResets).values({ userId, tokenHash: hashToken(token), expiresAt });
+  }
+  // Pas de revalidatePath ici : la page garderait sinon le bouton « Envoyer le lien » hors de l'écran.
+  return { link: `${appUrl()}/reinitialiser/${token}`, phone: user.phone, name: user.shopName ?? user.name };
 }

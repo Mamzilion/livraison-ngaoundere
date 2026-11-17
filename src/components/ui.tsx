@@ -5,6 +5,7 @@ import { getT } from "@/lib/i18n-server";
 import type { DeliveryStatus } from "@/lib/schema";
 import { STATUS_COLOR } from "@/lib/format";
 import { LangSwitch } from "./i18n";
+import { BottomNav, TopNav, type NavItem } from "./nav";
 
 export function Logo({ className = "", dark = false }: { className?: string; dark?: boolean }) {
   return (
@@ -16,40 +17,43 @@ export function Logo({ className = "", dark = false }: { className?: string; dar
   );
 }
 
-export async function AppHeader({ links, lang = true }: { links: { href: string; label: string }[]; lang?: boolean }) {
+export async function AppHeader({ items, lang = true }: { items: NavItem[]; lang?: boolean }) {
   const t = await getT();
   return (
-    <header className="sticky top-0 z-20 border-b border-line/70 bg-cream/85 backdrop-blur-md">
-      <div className="mx-auto flex max-w-3xl items-center justify-between gap-3 px-4 py-3">
-        <Link href={links[0]?.href ?? "/"}>
-          <Logo />
-        </Link>
-        <div className="flex items-center gap-2">
-          {lang && <LangSwitch />}
-          <form action={logout}>
-            <button className="rounded-full px-3 py-1.5 text-sm text-muted transition hover:bg-paper hover:text-ink">
-              {t("common.logout")}
-            </button>
-          </form>
-        </div>
-      </div>
-      <nav className="mx-auto flex max-w-3xl gap-1 overflow-x-auto px-3 pb-2.5 text-sm">
-        {links.map((l) => (
-          <Link
-            key={l.href}
-            href={l.href}
-            className="whitespace-nowrap rounded-full px-3.5 py-1.5 font-medium text-ink/70 transition hover:bg-paper hover:text-ink"
-          >
-            {l.label}
+    <>
+      <header className="sticky top-0 z-20 border-b border-line/70 bg-cream/85 backdrop-blur-md">
+        <div className="mx-auto flex max-w-3xl items-center justify-between gap-3 px-4 py-3">
+          <Link href={items[0]?.href ?? "/"} aria-label={t("nav.mySpace")}>
+            <Logo />
           </Link>
-        ))}
-      </nav>
-    </header>
+          <div className="flex items-center gap-2">
+            {lang && <LangSwitch />}
+            <form action={logout}>
+              <button className="rounded-full px-3 py-1.5 text-sm text-muted transition hover:bg-paper hover:text-ink">
+                {t("common.logout")}
+              </button>
+            </form>
+          </div>
+        </div>
+        <TopNav items={items} />
+      </header>
+      <BottomNav items={items} />
+    </>
+  );
+}
+
+/** Lien de retour en haut des pages de détail. */
+export async function BackLink({ href, label }: { href: string; label?: string }) {
+  const t = await getT();
+  return (
+    <Link href={href} className="inline-flex items-center rounded-full px-1 py-1 text-sm font-medium text-muted transition hover:text-ink">
+      {label ?? t("nav.back")}
+    </Link>
   );
 }
 
 export function Page({ children }: { children: React.ReactNode }) {
-  return <main className="mx-auto max-w-3xl animate-fade-up space-y-4 px-4 py-6">{children}</main>;
+  return <main className="mx-auto max-w-3xl animate-fade-up space-y-4 px-4 pb-28 pt-6 sm:pb-10">{children}</main>;
 }
 
 const ACTIVE: DeliveryStatus[] = ["WAITING_LOCATION", "ASSIGNED", "PICKED_UP"];

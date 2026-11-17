@@ -58,9 +58,16 @@ Les commerçants créent leurs courses en ligne, le client partage sa position G
 - Solution de secours : envoi du point de repère seul si le GPS ne fonctionne pas
 
 ### Espace livreur
+- **Demandes disponibles** : le livreur voit les courses prêtes sans livreur et les accepte lui-même (un seul livreur peut prendre une course, 3 courses actives maximum)
+- **Rémunération selon la distance** : 150 FCFA + 30 FCFA/km, +100 FCFA colis lourd ou nuit (réglable dans `src/lib/pricing.ts`), affichée sur chaque course
+- **Mes gains** : aujourd'hui, 7 derniers jours, montant à recevoir de Babana et historique payé / à payer
 - Liste des courses à faire : retrait puis livraison
 - Boutons **Itinéraire** (Google Maps) et **Appeler**
 - Statuts : *Colis récupéré*, *Livré*, *Échec* (avec motif)
+
+### Navigation
+- Barre d'onglets fixée en bas de l'écran sur mobile dans chaque espace, liens « Retour » sur les pages de détail
+- Bouton « Mon espace » sur la page d'accueil quand on est connecté
 
 ### Langues : français et fulfulde
 - Bouton **FR / Fulfulde** sur toutes les pages publiques, commerçant, client et livreur (choix mémorisé)
@@ -75,7 +82,8 @@ Les commerçants créent leurs courses en ligne, le client partage sa position G
 - Toutes les courses avec filtres (actives, à assigner, livrées, échecs)
 - Assignation d'un livreur et envoi de la course sur WhatsApp
 - Saisie manuelle de la position du client si besoin
-- Reversements par commerçant
+- **Paiements** : reversements aux commerçants et paie des livreurs
+- **Mots de passe oubliés** : demandes des utilisateurs et envoi d'un lien de réinitialisation sur WhatsApp (valable 24 h, utilisable une seule fois)
 - Création et désactivation des comptes livreurs et commerçants
 
 ## Tarification
@@ -127,6 +135,7 @@ La distance routière est estimée à partir de la distance à vol d'oiseau (× 
    | `ADMIN_PHONE` | Numéro du compte administrateur (ex. `677112233`) |
    | `ADMIN_PASSWORD` | Mot de passe du compte administrateur |
    | `SEED_DEMO` | `1` pour créer des comptes et une course de démonstration |
+| `NEXT_PUBLIC_SUPPORT_WHATSAPP` | Facultatif : numéro WhatsApp de Babana, proposé sur la page « Mot de passe oublié » |
 
    Pour générer `AUTH_SECRET` :
    ```bash
@@ -217,7 +226,7 @@ Créés avec `SEED_DEMO=1` :
 - [ ] Carte interactive sur les pages de course
 - [ ] Tableau de bord chiffré (courses et chiffre d'affaires par jour et par semaine)
 - [ ] Envoi automatique des courses via l'API WhatsApp Business
-- [ ] Paiement Mobile Money et Orange Money intégré (Campay, Notch Pay ou CinetPay)
+- [ ] Paiement Mobile Money et Orange Money intégré (Notch Pay, mode test d'abord)
 - [ ] Packs mensuels avec réduction pour les commerçants réguliers
 
 **Version 3**

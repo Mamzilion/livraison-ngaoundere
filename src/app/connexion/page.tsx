@@ -24,6 +24,9 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
       <div className="card animate-fade-up space-y-5 p-6">
         <h1 className="display text-3xl">{t("auth.loginTitle")}</h1>
         <LoginForm next={suite} />
+        <Link href="/mot-de-passe-oublie" className="block text-center text-sm text-muted underline-offset-2 hover:text-ink hover:underline">
+          {t("auth.forgot")}
+        </Link>
       </div>
       <p className="mt-6 text-center text-sm text-muted">
         {t("auth.noAccount")}{" "}

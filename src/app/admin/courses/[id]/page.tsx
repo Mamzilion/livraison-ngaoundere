@@ -2,13 +2,14 @@ import { notFound } from "next/navigation";
 import { adminSetStatus, assignDriver } from "@/app/actions/admin";
 import { AutoRefresh, CopyButton, SubmitButton } from "@/components/client";
 import { DropCoordsForm } from "@/components/forms";
-import { Page, Row, StatusBadge } from "@/components/ui";
+import { BackLink, Page, Row, StatusBadge } from "@/components/ui";
 import { requireUser } from "@/lib/auth";
 import { appUrl } from "@/lib/config";
 import { and, asc, eq } from "drizzle-orm";
 import { db, deliveries, users } from "@/lib/db";
 import { displayPhone, fcfa, formatDateTime, mapsLink, whatsappLink } from "@/lib/format";
 import { customerLinkMessage, driverMessage } from "@/lib/messages";
+import { driverPayOf } from "@/lib/pricing";
 
 export const metadata = { title: "Course" };
 
@@ -33,6 +34,7 @@ export default async function AdminDeliveryPage({ params }: { params: Promise<{ 
   return (
     <Page>
       <AutoRefresh seconds={20} />
+      <BackLink href="/admin" label="← Courses" />
       <div className="flex items-center justify-between gap-3">
         <div>
           <p className="text-sm text-stone-500">{d.code} · {formatDateTime(d.createdAt)}</p>
@@ -104,6 +106,7 @@ export default async function AdminDeliveryPage({ params }: { params: Promise<{ 
           </Row>
           <Row label="Distance">{d.distanceKm != null ? `${d.distanceKm} km` : "—"}</Row>
           <Row label="Prix">{fcfa(d.price)}{d.night ? " (nuit)" : ""}</Row>
+          <Row label="Paie livreur">{fcfa(driverPayOf(d))}{d.driverPaid ? " · payé" : ""}</Row>
         </div>
         {d.status === "WAITING_LOCATION" && (
           <div className="space-y-2 border-t border-stone-100 pt-3">

@@ -46,3 +46,34 @@ export function isNightNow(date = new Date()): boolean {
   );
   return hour >= PRICING.nightStartHour || hour < 6;
 }
+
+// ——— Rémunération du livreur ———
+// Le livreur gagne plus sur les longues courses : une part fixe + un montant par km.
+// Le carburant reste à la charge de Babana (moto de l'entreprise).
+export const DRIVER_PAY = {
+  base: 150, // FCFA par course
+  perKm: 30, // FCFA par km
+  roundTo: 50,
+  supplementShare: 0.5, // part des suppléments (colis lourd, nuit) reversée au livreur
+};
+
+export function computeDriverPay(distanceKm: number, opts: { heavy?: boolean; night?: boolean } = {}): number {
+  let pay = Math.ceil((DRIVER_PAY.base + DRIVER_PAY.perKm * distanceKm) / DRIVER_PAY.roundTo) * DRIVER_PAY.roundTo;
+  if (opts.heavy) pay += PRICING.heavySupplement * DRIVER_PAY.supplementShare;
+  if (opts.night) pay += PRICING.nightSupplement * DRIVER_PAY.supplementShare;
+  return pay;
+}
+
+/** Prix de la course et rémunération du livreur, calculés ensemble. */
+export function quote(distanceKm: number, opts: { heavy?: boolean; night?: boolean } = {}) {
+  return { distanceKm, price: computePrice(distanceKm, opts), driverPay: computeDriverPay(distanceKm, opts) };
+}
+
+/** Rémunération d'une course déjà enregistrée (anciennes courses : recalculée). */
+export function driverPayOf(d: { driverPay: number | null; distanceKm: number | null; heavy: boolean; night: boolean }) {
+  if (d.driverPay != null) return d.driverPay;
+  return d.distanceKm != null ? computeDriverPay(d.distanceKm, { heavy: d.heavy, night: d.night }) : 0;
+}
+
+/** Courses actives qu'un livreur peut accepter en même temps. */
+export const MAX_ACTIVE_PER_DRIVER = 3;
