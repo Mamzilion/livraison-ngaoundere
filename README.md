@@ -236,4 +236,4 @@ Créés avec `SEED_DEMO=1` :
 
 ---
 
-Projet développé par **MAMA Daniel Dilane** — [github.com/Mamzilion](https://github.com/Mamzilion)
+Projet développé par **MAMA DANIEL** — [github.com/Mamzilion](https://github.com/Mamzilion)
