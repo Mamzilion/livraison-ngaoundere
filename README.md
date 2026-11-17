@@ -1,64 +1,221 @@
-# Ngaoundéré Livraison — MVP
+# 🛵 Ngaoundéré Livraison
 
-Plateforme de livraison pour les petits commerces de Ngaoundéré, Dang et Bini.
+**Plateforme de livraison pour les petits commerces de Ngaoundéré et de sa périphérie (Dang, Bini).**
 
-- **Commerçant** : crée une course, envoie au client un lien (WhatsApp/SMS), suit la livraison et ses reversements.
-- **Client** : ouvre le lien, appuie sur « Partager ma position » → GPS enregistré, sans application à installer.
-- **Prix** : calculé automatiquement selon la distance (300 FCFA + 80 FCFA/km, arrondi à 50, minimum 500 FCFA ; +200 colis lourd ; +200 après 19 h). Voir `src/lib/pricing.ts`.
-- **Admin** : voit toutes les courses, assigne un livreur, lui envoie la course sur WhatsApp en un clic, gère les reversements et les comptes.
-- **Livreur** : liste de ses courses, itinéraires Google Maps, boutons « Récupéré », « Livré », « Échec ».
+Les commerçants créent leurs courses en ligne, le client partage sa position GPS d'un simple clic, le prix est calculé automatiquement selon la distance et le livreur reçoit la course sur WhatsApp. L'argent encaissé est reversé au commerçant chaque soir.
+
+> Statut : **MVP** (version de démonstration), en cours de test.
+
+---
+
+## Sommaire
+
+- [Le problème](#le-problème)
+- [Comment ça marche](#comment-ça-marche)
+- [Fonctionnalités](#fonctionnalités)
+- [Tarification](#tarification)
+- [Technologies](#technologies)
+- [Installation en local](#installation-en-local)
+- [Déploiement en ligne](#déploiement-en-ligne)
+- [Comptes de démonstration](#comptes-de-démonstration)
+- [Structure du projet](#structure-du-projet)
+- [Modifier la base de données](#modifier-la-base-de-données)
+- [Feuille de route](#feuille-de-route)
+
+---
+
+## Le problème
+
+À Ngaoundéré, les petits commerces vendent de plus en plus à distance (Facebook, WhatsApp), mais la livraison reste improvisée :
+
+- le commerçant appelle un moto-taximan au hasard, **sans suivi** ni garantie sur l'argent encaissé ;
+- les **adresses sont floues** et beaucoup de clients ne savent pas partager leur position sur WhatsApp ;
+- le prix se **négocie à chaque course**.
+
+## Comment ça marche
+
+| Étape | Qui | Ce qui se passe |
+| --- | --- | --- |
+| 1 | Commerçant | Crée la course : nom et numéro du client, colis, montant à encaisser. |
+| 2 | Client | Reçoit un lien par WhatsApp ou SMS, appuie sur **« Partager ma position »** : son GPS est enregistré, sans rien installer. |
+| 3 | Plateforme | Calcule la distance et le **prix de la course** automatiquement. |
+| 4 | Admin | Assigne un livreur et lui envoie la course **sur WhatsApp en un clic** (itinéraires Google Maps inclus). |
+| 5 | Livreur | Récupère le colis, livre, encaisse, met à jour le statut depuis son téléphone. |
+| 6 | Admin | Reverse au commerçant, le soir même, l'argent encaissé moins le prix des courses. |
+
+## Fonctionnalités
+
+### Espace commerçant
+- Inscription avec enregistrement de la position GPS du commerce
+- Création d'une course en moins de 30 secondes
+- Envoi du lien de localisation au client (WhatsApp, SMS ou copie)
+- Suivi des statuts en temps réel et historique des courses
+- Montant à recevoir (reversements)
+
+### Page client (sans compte)
+- Partage de la position GPS en un bouton
+- Point de repère facultatif (« derrière la mosquée, portail bleu »)
+- Solution de secours : envoi du point de repère seul si le GPS ne fonctionne pas
+
+### Espace livreur
+- Liste des courses à faire : retrait puis livraison
+- Boutons **Itinéraire** (Google Maps) et **Appeler**
+- Statuts : *Colis récupéré*, *Livré*, *Échec* (avec motif)
+
+### Espace administrateur
+- Toutes les courses avec filtres (actives, à assigner, livrées, échecs)
+- Assignation d'un livreur et envoi de la course sur WhatsApp
+- Saisie manuelle de la position du client si besoin
+- Reversements par commerçant
+- Création et désactivation des comptes livreurs et commerçants
+
+## Tarification
+
+Le prix est calculé selon la distance entre le commerce et le client :
+
+**300 FCFA de prise en charge + 80 FCFA par km**, arrondi aux 50 FCFA supérieurs, **minimum 500 FCFA**.
+
+| Distance | Prix |
+| --- | --- |
+| 2 km | 500 FCFA |
+| 5 km | 700 FCFA |
+| 8 km | 950 FCFA |
+| 12 km | 1 300 FCFA |
+| 15 km | 1 500 FCFA |
+
+Suppléments : **+200 FCFA** colis lourd ou volumineux, **+200 FCFA** après 19 h.
+
+La distance routière est estimée à partir de la distance à vol d'oiseau (× 1,3). Tous les paramètres se modifient dans [`src/lib/pricing.ts`](src/lib/pricing.ts).
 
 ## Technologies
 
-Next.js 15 (App Router, Server Actions) · TypeScript · Tailwind CSS 4 · PostgreSQL + Drizzle ORM · sessions JWT (jose) · hébergement Vercel + base Neon.
+| Rôle | Outil |
+| --- | --- |
+| Framework | [Next.js 15](https://nextjs.org) (App Router, Server Actions) + TypeScript |
+| Interface | [Tailwind CSS 4](https://tailwindcss.com), application web installable (PWA) |
+| Base de données | PostgreSQL ([Neon](https://neon.tech)) + [Drizzle ORM](https://orm.drizzle.team) |
+| Authentification | Sessions signées (JWT via `jose`), mots de passe hachés (`bcryptjs`) |
+| Hébergement | [Vercel](https://vercel.com) (région Francfort, comme la base Neon) |
 
-## Lancer en local (Windows / Laragon ou autre)
+## Installation en local
 
-1. Installer Node.js 20+ et avoir une base PostgreSQL (locale ou Neon gratuite).
-2. Copier `.env.example` en `.env` et remplir les valeurs.
-3. Installer et préparer la base :
+**Prérequis :** Node.js 20 ou plus récent, une base PostgreSQL (locale ou Neon gratuite).
+
+1. **Installer les dépendances**
    ```bash
    npm install
-   npm run db:migrate   # crée les tables
-   npm run seed         # crée le compte admin (+ données de démo si SEED_DEMO=1)
+   ```
+
+2. **Configurer l'environnement** : copier `.env.example` en `.env`, puis remplir :
+
+   | Variable | Description |
+   | --- | --- |
+   | `DATABASE_URL` | URL de la base (sur Neon : avec *Connection pooling*) |
+   | `DIRECT_URL` | URL directe de la base (sur Neon : sans *Connection pooling*), utilisée pour les migrations |
+   | `AUTH_SECRET` | Chaîne aléatoire d'au moins 32 caractères |
+   | `NEXT_PUBLIC_APP_NAME` | Nom affiché sur le site |
+   | `NEXT_PUBLIC_APP_URL` | Facultatif : URL publique du site (détectée automatiquement sur Vercel) |
+   | `ADMIN_PHONE` | Numéro du compte administrateur (ex. `677112233`) |
+   | `ADMIN_PASSWORD` | Mot de passe du compte administrateur |
+   | `SEED_DEMO` | `1` pour créer des comptes et une course de démonstration |
+
+   Pour générer `AUTH_SECRET` :
+   ```bash
+   node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+   ```
+
+3. **Créer les tables et le compte admin**
+   ```bash
+   npm run db:migrate
+   npm run seed
+   ```
+
+4. **Lancer le site**
+   ```bash
    npm run dev
    ```
-4. Ouvrir http://localhost:3000 — admin : le numéro et le mot de passe mis dans `.env`.
+   Puis ouvrir http://localhost:3000.
 
-Comptes de démo (avec `SEED_DEMO=1`) : commerçant `670000001`, livreur `670000002`, mot de passe `demo1234`.
+> Le partage de position GPS ne fonctionne qu'en **HTTPS** (ou sur `localhost`). Pour le tester sur un téléphone, utilisez la version en ligne.
 
-## Mettre en ligne (gratuit)
+## Déploiement en ligne
 
-1. **Base de données** : créer un projet sur [neon.tech](https://neon.tech) (région la plus proche, ex. Europe). Copier :
-   - l'URL *pooled* → `DATABASE_URL`
-   - l'URL *directe* (sans `-pooler`) → `DIRECT_URL`
-2. **Code** : pousser ce dossier sur un dépôt GitHub.
-3. **Vercel** : sur [vercel.com](https://vercel.com) → *Add New Project* → importer le dépôt. Dans *Environment Variables*, ajouter :
-   `DATABASE_URL`, `DIRECT_URL`, `AUTH_SECRET` (32+ caractères aléatoires), `NEXT_PUBLIC_APP_NAME`.
-   Le script `vercel-build` applique automatiquement les migrations à chaque déploiement.
-4. **Compte admin** : depuis ton PC, avec les URL Neon dans `.env`, lancer `npm run seed` une fois.
-5. (Plus tard) Nom de domaine : *Settings → Domains* sur Vercel, puis mettre `NEXT_PUBLIC_APP_URL`.
+1. **Base de données (Neon)** : créer un projet dans la région *AWS Europe Central (Frankfurt)* et récupérer les deux URL de connexion (avec et sans *Connection pooling*).
+2. **Tables et compte admin** : depuis votre PC, avec ces URL dans `.env`, lancer `npm run db:migrate` puis `npm run seed`.
+3. **Vercel** : *Add New → Project*, importer ce dépôt GitHub, puis ajouter dans *Environment Variables* :
+   `DATABASE_URL`, `DIRECT_URL`, `AUTH_SECRET`, `NEXT_PUBLIC_APP_NAME`.
+4. Cliquer sur **Deploy**.
+
+À chaque nouveau `git push`, Vercel redéploie le site et applique automatiquement les nouvelles migrations (script `vercel-build`).
+
+## Comptes de démonstration
+
+Créés avec `SEED_DEMO=1` :
+
+| Rôle | Téléphone | Mot de passe |
+| --- | --- | --- |
+| Commerçant (Boutique Aïssa Mode) | `670000001` | `demo1234` |
+| Livreur | `670000002` | `demo1234` |
+| Administrateur | celui de `ADMIN_PHONE` | celui de `ADMIN_PASSWORD` |
+
+⚠️ Désactivez les comptes de démonstration avant une utilisation réelle (Admin → *Livreurs & commerçants*).
+
+## Structure du projet
+
+```
+├── drizzle/                     Migrations SQL générées
+├── public/                      Icône et fichiers statiques
+├── scripts/
+│   ├── migrate.ts               Applique les migrations
+│   └── seed.ts                  Crée l'admin et les données de démo
+└── src/
+    ├── app/
+    │   ├── page.tsx             Page d'accueil (présentation et tarifs)
+    │   ├── connexion/           Connexion
+    │   ├── inscription/         Inscription commerçant
+    │   ├── commercant/          Espace commerçant
+    │   ├── livreur/             Espace livreur
+    │   ├── admin/               Espace administrateur
+    │   ├── l/[token]/           Page client : partage de la position
+    │   ├── api/locate/[token]/  Réception de la position GPS
+    │   └── actions/             Actions serveur (auth, commerçant, livreur, admin)
+    ├── components/              Composants d'interface et formulaires
+    ├── lib/
+    │   ├── schema.ts            Schéma de la base de données
+    │   ├── pricing.ts           Calcul du prix selon la distance
+    │   ├── messages.ts          Messages WhatsApp (client et livreur)
+    │   ├── session.ts, auth.ts  Sessions et contrôle d'accès
+    │   └── format.ts            Téléphones, montants, dates, liens
+    └── middleware.ts            Protection des espaces par rôle
+```
 
 ## Modifier la base de données
 
-Modifier `src/lib/schema.ts`, puis :
-```bash
-npm run db:generate   # crée un fichier SQL dans ./drizzle
-npm run db:migrate
-```
+1. Modifier [`src/lib/schema.ts`](src/lib/schema.ts).
+2. Générer la migration :
+   ```bash
+   npm run db:generate
+   ```
+3. L'appliquer en local :
+   ```bash
+   npm run db:migrate
+   ```
+4. Faire un `git push` : Vercel l'applique en ligne au prochain déploiement.
 
-## Structure
+## Feuille de route
 
-```
-src/app/            pages (accueil, connexion, inscription, commercant/, livreur/, admin/, l/[token])
-src/app/actions/    actions serveur (auth, commerçant, admin, livreur)
-src/app/api/locate/ réception de la position GPS du client
-src/lib/            schéma BD, tarification, sessions, formatage, messages WhatsApp
-scripts/            migrations et seed
-```
+**Version 2**
+- [ ] Carte interactive sur les pages de course
+- [ ] Tableau de bord chiffré (courses et chiffre d'affaires par jour et par semaine)
+- [ ] Envoi automatique des courses via l'API WhatsApp Business
+- [ ] Paiement Mobile Money et Orange Money intégré (Campay, Notch Pay ou CinetPay)
+- [ ] Packs mensuels avec réduction pour les commerçants réguliers
 
-## Prochaines étapes (V2)
+**Version 3**
+- [ ] Suivi du livreur en temps réel
+- [ ] Attribution automatique des courses entre plusieurs livreurs
+- [ ] Ouverture à d'autres villes (Garoua, Meiganga)
 
-- Envoi automatique WhatsApp via l'API WhatsApp Business.
-- Paiement MoMo/OM intégré (Campay, Notch Pay ou CinetPay).
-- Carte pour placer le client à la main, suivi du livreur en temps réel.
+---
+
+Projet développé par **MAMA Daniel** — [github.com/Mamzilion](https://github.com/Mamzilion)
