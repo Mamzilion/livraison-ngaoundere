@@ -5,11 +5,14 @@ import { requireUser } from "@/lib/auth";
 import { and, asc, eq, gte, inArray } from "drizzle-orm";
 import { db, deliveries } from "@/lib/db";
 import { directionsLink, displayPhone, fcfa } from "@/lib/format";
+import { getT } from "@/lib/i18n-server";
+import { Reveal } from "@/components/motion";
 
 export const metadata = { title: "Mes courses" };
 
 export default async function DriverPage() {
   const me = await requireUser("DRIVER");
+  const t = await getT();
   const [active, doneToday] = await Promise.all([
     db.query.deliveries.findMany({
       where: and(eq(deliveries.driverId, me.id), inArray(deliveries.status, ["ASSIGNED", "PICKED_UP"])),
@@ -28,85 +31,83 @@ export default async function DriverPage() {
 
   return (
     <>
-      <AppHeader title="Livreur" links={[{ href: "/livreur", label: "Mes courses" }]} />
+      <AppHeader links={[{ href: "/livreur", label: t("d.title") }]} />
       <Page>
         <AutoRefresh seconds={20} />
-        <h1 className="text-2xl font-bold">Bonjour {me.name.split(" ")[0]} 🛵</h1>
+        <h1 className="display text-3xl">{t("d.hello")} {me.name.split(" ")[0]} 🛵</h1>
         <div className="grid grid-cols-2 gap-3">
-          <Stat label="À faire" value={active.length} />
-          <Stat label="Livrées (24 h)" value={doneToday.length} hint={`Encaissé : ${fcfa(cashToday)}`} />
+          <Stat label={t("d.todo")} value={active.length} />
+          <Stat label={t("d.done24")} value={doneToday.length} hint={`${t("d.cash")} : ${fcfa(cashToday)}`} />
         </div>
 
-        {active.length === 0 && <div className="card text-center text-sm text-stone-500">Aucune course pour le moment.</div>}
+        {active.length === 0 && <div className="card text-center text-sm text-muted">{t("d.none")}</div>}
 
-        {active.map((d) => {
+        {active.map((d, idx) => {
           const m = d.merchant;
           const picked = d.status === "PICKED_UP";
           return (
-            <div key={d.id} className="card space-y-3">
+            <Reveal key={d.id} delay={idx * 80} className="card space-y-3">
               <div className="flex items-center justify-between">
-                <span className="font-mono text-sm text-stone-500">{d.code}</span>
+                <span className="font-mono text-xs text-muted">{d.code}</span>
                 <StatusBadge status={d.status} />
               </div>
 
-              <div className={`rounded-xl p-3 ${picked ? "bg-stone-50 opacity-70" : "bg-brand-50"}`}>
-                <div className="text-xs font-semibold uppercase text-brand-800">1 · Retrait</div>
+              <div className={`rounded-2xl p-4 transition ${picked ? "bg-cream opacity-60" : "bg-brand-50 ring-2 ring-brand-600/30"}`}>
+                <div className="eyebrow !text-brand-700">{t("d.pickup")}</div>
                 <div className="font-semibold">{m.shopName ?? m.name}</div>
-                <div className="text-sm text-stone-600">{m.pickupLandmark}</div>
+                <div className="text-sm text-muted">{m.pickupLandmark}</div>
                 <div className="mt-2 grid grid-cols-2 gap-2">
                   {m.pickupLat != null && (
-                    <a className="btn-ghost" href={directionsLink(m.pickupLat, m.pickupLng!)} target="_blank" rel="noopener">Itinéraire</a>
+                    <a className="btn-ghost" href={directionsLink(m.pickupLat, m.pickupLng!)} target="_blank" rel="noopener">{t("common.route")}</a>
                   )}
-                  <a className="btn-ghost" href={`tel:+${m.phone}`}>Appeler</a>
+                  <a className="btn-ghost" href={`tel:+${m.phone}`}>{t("common.call")}</a>
                 </div>
               </div>
 
-              <div className={`rounded-xl p-3 ${picked ? "bg-brand-50" : "bg-stone-50"}`}>
-                <div className="text-xs font-semibold uppercase text-brand-800">2 · Livraison</div>
+              <div className={`rounded-2xl p-4 transition ${picked ? "bg-brand-50 ring-2 ring-brand-600/30" : "bg-cream"}`}>
+                <div className="eyebrow !text-brand-700">{t("d.drop")}</div>
                 <div className="font-semibold">{d.customerName} · {displayPhone(d.customerPhone)}</div>
-                <div className="text-sm text-stone-600">{d.dropLandmark ?? "Pas de repère"}</div>
+                <div className="text-sm text-muted">{d.dropLandmark ?? t("d.noLandmark")}</div>
                 <div className="mt-2 grid grid-cols-2 gap-2">
                   {d.dropLat != null && (
-                    <a className="btn-ghost" href={directionsLink(d.dropLat, d.dropLng!)} target="_blank" rel="noopener">Itinéraire</a>
+                    <a className="btn-ghost" href={directionsLink(d.dropLat, d.dropLng!)} target="_blank" rel="noopener">{t("common.route")}</a>
                   )}
-                  <a className="btn-ghost" href={`tel:+${d.customerPhone}`}>Appeler</a>
+                  <a className="btn-ghost" href={`tel:+${d.customerPhone}`}>{t("common.call")}</a>
                 </div>
               </div>
 
               <div className="text-sm">
-                <div>Colis : <strong>{d.packageDesc}</strong>{d.heavy ? " (lourd)" : ""}</div>
-                <div>À encaisser : <strong>{fcfa(d.amountToCollect)}</strong></div>
+                <div>{t("d.package")} : <strong>{d.packageDesc}</strong>{d.heavy ? " (+)" : ""}</div>
+                <div>{t("d.collect")} : <strong>{fcfa(d.amountToCollect)}</strong></div>
               </div>
 
               {!picked ? (
                 <form action={driverUpdateStatus}>
                   <input type="hidden" name="id" value={d.id} />
                   <input type="hidden" name="action" value="pickup" />
-                  <SubmitButton>J&apos;ai récupéré le colis</SubmitButton>
+                  <SubmitButton className="btn-primary w-full !py-4">{t("d.picked")}</SubmitButton>
                 </form>
               ) : (
                 <form action={driverUpdateStatus}>
                   <input type="hidden" name="id" value={d.id} />
                   <input type="hidden" name="action" value="delivered" />
-                  <SubmitButton>Livré ✓ {d.amountToCollect > 0 ? `(${fcfa(d.amountToCollect)} encaissés)` : ""}</SubmitButton>
+                  <SubmitButton className="btn-primary w-full !py-4">{t("d.delivered")} {d.amountToCollect > 0 ? `(${fcfa(d.amountToCollect)} ${t("d.collected")})` : ""}</SubmitButton>
                 </form>
               )}
               <details className="text-sm">
-                <summary className="cursor-pointer text-rose-700">Signaler un échec</summary>
+                <summary className="cursor-pointer text-rose-700">{t("d.fail")}</summary>
                 <form action={driverUpdateStatus} className="mt-2 space-y-2">
                   <input type="hidden" name="id" value={d.id} />
                   <input type="hidden" name="action" value="failed" />
                   <select name="reason" className="input">
-                    <option>Client injoignable</option>
-                    <option>Client absent</option>
-                    <option>Client a refusé le colis</option>
-                    <option>Commerce fermé</option>
-                    <option>Adresse introuvable</option>
+                    {(["d.r1", "d.r2", "d.r3", "d.r4", "d.r5"] as const).map((k) => (
+                      <option key={k} value={t(k)}>{t(k)}</option>
+                    ))}
                   </select>
-                  <SubmitButton className="btn-danger w-full">Confirmer l&apos;échec</SubmitButton>
+                  <SubmitButton className="btn-danger w-full">{t("d.failConfirm")}</SubmitButton>
                 </form>
               </details>
-            </div>
+            </Reveal>
           );
         })}
       </Page>

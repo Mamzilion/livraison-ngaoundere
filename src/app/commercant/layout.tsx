@@ -1,14 +1,15 @@
 import { AppHeader } from "@/components/ui";
+import { getT } from "@/lib/i18n-server";
 
-export default function MerchantLayout({ children }: { children: React.ReactNode }) {
+export default async function MerchantLayout({ children }: { children: React.ReactNode }) {
+  const t = await getT();
   return (
     <>
       <AppHeader
-        title="Espace commerçant"
         links={[
-          { href: "/commercant", label: "Mes courses" },
-          { href: "/commercant/nouvelle", label: "+ Nouvelle course" },
-          { href: "/commercant/profil", label: "Mon commerce" },
+          { href: "/commercant", label: t("m.navCourses") },
+          { href: "/commercant/nouvelle", label: t("m.navNew") },
+          { href: "/commercant/profil", label: t("m.navShop") },
         ]}
       />
       {children}

@@ -1,4 +1,4 @@
-# 🛵 Ngaoundéré Livraison
+# 🛵 Babana
 
 **Plateforme de livraison pour les petits commerces de Ngaoundéré et de sa périphérie (Dang, Bini).**
 
@@ -62,6 +62,15 @@ Les commerçants créent leurs courses en ligne, le client partage sa position G
 - Boutons **Itinéraire** (Google Maps) et **Appeler**
 - Statuts : *Colis récupéré*, *Livré*, *Échec* (avec motif)
 
+### Langues : français et fulfulde
+- Bouton **FR / Fulfulde** sur toutes les pages publiques, commerçant, client et livreur (choix mémorisé)
+- Traductions dans [`src/lib/i18n.ts`](src/lib/i18n.ts) : ⚠️ les textes fulfulde sont un premier jet à faire relire par un locuteur natif
+
+### Expérience
+- Page d'accueil animée : apparitions au défilement, bandeau des quartiers, compteurs, calculateur de prix interactif, FAQ en accordéon
+- Animations légères dans l'application (progression de la course, statuts actifs qui pulsent, confirmation animée côté client)
+- Les animations se désactivent si le téléphone est réglé pour réduire les mouvements
+
 ### Espace administrateur
 - Toutes les courses avec filtres (actives, à assigner, livrées, échecs)
 - Assignation d'un livreur et envoi de la course sur WhatsApp
@@ -92,7 +101,7 @@ La distance routière est estimée à partir de la distance à vol d'oiseau (× 
 | Rôle | Outil |
 | --- | --- |
 | Framework | [Next.js 15](https://nextjs.org) (App Router, Server Actions) + TypeScript |
-| Interface | [Tailwind CSS 4](https://tailwindcss.com), application web installable (PWA) |
+| Interface | [Tailwind CSS 4](https://tailwindcss.com), polices Bricolage Grotesque, Inter et JetBrains Mono (auto-hébergées), application web installable (PWA) |
 | Base de données | PostgreSQL ([Neon](https://neon.tech)) + [Drizzle ORM](https://orm.drizzle.team) |
 | Authentification | Sessions signées (JWT via `jose`), mots de passe hachés (`bcryptjs`) |
 | Hébergement | [Vercel](https://vercel.com) (région Francfort, comme la base Neon) |
@@ -218,4 +227,4 @@ Créés avec `SEED_DEMO=1` :
 
 ---
 
-Projet développé par **MAMA Daniel** — [github.com/Mamzilion](https://github.com/Mamzilion)
+Projet développé par **Abbas Madani** — [github.com/Mamzilion](https://github.com/Mamzilion)

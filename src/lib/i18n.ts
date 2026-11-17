@@ -1,0 +1,241 @@
+// Traductions français / fulfulde.
+// ⚠️ Les textes fulfulde sont un PREMIER JET : ils doivent être relus et corrigés
+// par un locuteur natif de Ngaoundéré avant la mise en service.
+// Pour corriger une traduction, modifiez simplement la valeur "ff" de la clé.
+
+export const LANGS = ["fr", "ff"] as const;
+export type Lang = (typeof LANGS)[number];
+export const LANG_COOKIE = "lang";
+export const LANG_LABEL: Record<Lang, string> = { fr: "Français", ff: "Fulfulde" };
+
+const dict = {
+  // ——— Commun ———
+  "common.login": { fr: "Se connecter", ff: "Naatu" },
+  "common.logout": { fr: "Déconnexion", ff: "Yaltu" },
+  "common.wait": { fr: "Patientez…", ff: "Muñ seeɗa…" },
+  "common.phone": { fr: "Téléphone", ff: "Telefon" },
+  "common.password": { fr: "Mot de passe", ff: "Batu sirru" },
+  "common.call": { fr: "Appeler", ff: "Noddu" },
+  "common.route": { fr: "Itinéraire", ff: "Laawol" },
+  "common.copyLink": { fr: "Copier le lien", ff: "Natto liŋ" },
+  "common.copied": { fr: "Copié ✓", ff: "Natti ✓" },
+  "common.useMyPosition": { fr: "Utiliser ma position actuelle", ff: "Huutoro nokkuure am jooni" },
+  "common.locating": { fr: "Recherche de la position…", ff: "Ina yiyloo nokkuure…" },
+  "common.positionSaved": { fr: "Position enregistrée", ff: "Nokkuure winndaama" },
+  "common.positionError": {
+    fr: "Impossible d'obtenir la position. Activez la localisation du téléphone et autorisez le navigateur.",
+    ff: "Nokkuure heɓaaki. Uddit « localisation » telefon maa, njaɓaa navigateur.",
+  },
+
+  // ——— Statuts ———
+  "status.WAITING_LOCATION": { fr: "Attente position client", ff: "Ina sabbii nokkuure soodoowo" },
+  "status.READY": { fr: "Prête, sans livreur", ff: "Hebbii, naɓoowo walaa" },
+  "status.ASSIGNED": { fr: "Livreur en route", ff: "Naɓoowo ina e laawol" },
+  "status.PICKED_UP": { fr: "Colis récupéré", ff: "Kaake ƴettaama" },
+  "status.DELIVERED": { fr: "Livrée", ff: "Hewtinaama" },
+  "status.FAILED": { fr: "Échec", ff: "Waawaaka" },
+  "status.CANCELLED": { fr: "Annulée", ff: "Haɗaama" },
+
+  // ——— Accueil ———
+  "home.tag": { fr: "Ngaoundéré · Dang · Bini", ff: "Ngaoundéré · Dang · Bini" },
+  "home.title1": { fr: "Vous vendez,", ff: "On njeeyay," },
+  "home.title2": { fr: "Babana livre.", ff: "Babana naɓay." },
+  "home.subtitle": {
+    fr: "Livraison rapide et fiable pour les boutiques, vendeurs en ligne et restaurants. Prix fixe selon la distance, suivi en direct et argent reversé chaque soir.",
+    ff: "Naɓgol kaake yaawngol, koolniingol, ngam bitikjo, jeeyooɓe e internet e restoraan. Coggu tabitii no laawol juuti, tokkugol jooni jooni, ceede ndutto kikiiɗe kala.",
+  },
+  "home.ctaMerchant": { fr: "Créer mon compte commerçant", ff: "Waɗu konte jeeyoowo" },
+  "home.ctaLogin": { fr: "J'ai déjà un compte", ff: "Mi woodi konte" },
+  "home.stat1": { fr: "minimum par course", ff: "coggu ngu ɓuri famɗude" },
+  "home.stat2": { fr: "par kilomètre", ff: "e kilomeeter kala" },
+  "home.stat3": { fr: "reversement de vos ventes", ff: "ceede maa ndutto" },
+  "home.stat3v": { fr: "Le soir même", ff: "Kikiiɗe ɗon" },
+  "home.badgeGps": { fr: "Position reçue", ff: "Nokkuure hewtii" },
+  "home.badgePaid": { fr: "Reversé par MoMo", ff: "Ceede ndutti MoMo" },
+  "home.howLabel": { fr: "Comment ça marche", ff: "No golle ngonirta" },
+  "home.howTitle": { fr: "Une course en cinq étapes, sans appel ni négociation.", ff: "Naɓgol e daawe njoy, walaa noddugol, walaa haaldugol coggu." },
+  "home.step1t": { fr: "Vous créez la course", ff: "Waɗu naɓgol" },
+  "home.step1d": { fr: "Nom et numéro du client, colis, montant à encaisser. 30 secondes.", ff: "Innde e telefon soodoowo, kaake, ceede ɗe o yoɓata. Sekond 30." },
+  "home.step2t": { fr: "Le client partage sa position", ff: "Soodoowo nelda nokkuure mum" },
+  "home.step2d": { fr: "Il reçoit un lien et appuie sur un bouton : son GPS est enregistré.", ff: "O heɓan liŋ, o ŋoppa butoŋ : GPS mum winndete." },
+  "home.step3t": { fr: "Le prix est calculé", ff: "Coggu limtete" },
+  "home.step3d": { fr: "Automatiquement, selon la distance. Pas de négociation.", ff: "Hoore mum, no laawol juuti. Haaldugol coggu walaa." },
+  "home.step4t": { fr: "Notre livreur livre", ff: "Naɓoowo amen naɓay" },
+  "home.step4d": { fr: "Il récupère le colis chez vous et le remet au client.", ff: "O ƴettan kaake ka maa, o hokka soodoowo." },
+  "home.step5t": { fr: "Vous êtes payé le soir", ff: "A yoɓete kikiiɗe" },
+  "home.step5d": { fr: "L'argent encaissé vous est reversé par MoMo ou OM, le jour même.", ff: "Ceede ɗe o yoɓi ndutto maa e MoMo maa OM, ñalawma ɗon." },
+  "home.whyLabel": { fr: "Pourquoi Babana", ff: "Ko waɗi Babana" },
+  "home.whyTitle": { fr: "Fini le moto-taxi pris au hasard.", ff: "Ɓennu moto-taksi ɓe a anndaa." },
+  "home.why1t": { fr: "Suivi de chaque colis", ff: "Tokkugol kaake kala" },
+  "home.why1d": { fr: "Vous voyez où en est chaque course, de la boutique au client.", ff: "A yiiɗan to naɓgol kala hewti, gila bitik haa soodoowo." },
+  "home.why2t": { fr: "Argent sécurisé", ff: "Ceede ndeenaaɗe" },
+  "home.why2d": { fr: "Chaque franc encaissé est enregistré et reversé le jour même.", ff: "Sefa kala winndete, ndutto ñalawma ɗon." },
+  "home.why3t": { fr: "Prix clairs", ff: "Coggu laaɓɗo" },
+  "home.why3d": { fr: "Le tarif dépend de la distance, connu avant le départ.", ff: "Coggu tokki juutugol laawol, a anndan ɗum ado o yahde." },
+  "home.why4t": { fr: "Rien à installer", ff: "Walaa ko a aafata" },
+  "home.why4d": { fr: "Tout se fait depuis le navigateur du téléphone.", ff: "Fof waɗete e navigateur telefon." },
+  "home.priceLabel": { fr: "Tarifs", ff: "Coggu" },
+  "home.priceTitle": { fr: "Calculez le prix de votre course.", ff: "Limtu coggu naɓgol maa." },
+  "home.priceDistance": { fr: "Distance", ff: "Juutugol laawol" },
+  "home.priceHeavy": { fr: "Colis lourd ou volumineux", ff: "Kaake teddhuɗe maa mawɗe" },
+  "home.priceNight": { fr: "Après 19 h", ff: "Ɓaawo 19 h" },
+  "home.priceTotal": { fr: "Prix de la course", ff: "Coggu naɓgol" },
+  "home.priceFormula": {
+    fr: "300 FCFA de prise en charge + 80 FCFA par km, minimum 500 FCFA.",
+    ff: "300 FCFA fuɗɗoode + 80 FCFA e kilomeeter kala, ɓuri famɗude 500 FCFA.",
+  },
+  "home.faqLabel": { fr: "Questions fréquentes", ff: "Naamne ɗe ɗuuɗi" },
+  "home.faqTitle": { fr: "Vous vous demandez…", ff: "A naamnotoo…" },
+  "home.faq1q": { fr: "Qui paie la livraison ?", ff: "Moye yoɓata naɓgol ?" },
+  "home.faq1a": {
+    fr: "Le commerçant. Le prix de la course est déduit de l'argent encaissé avant le reversement. Il peut l'ajouter au montant payé par son client s'il le souhaite.",
+    ff: "Jeeyoowo. Coggu naɓgol ittete e ceede ɗe soodoowo yoɓi ado ndutto. O waawi ɓeydude ɗum e ceede soodoowo so o yiɗi.",
+  },
+  "home.faq2q": { fr: "Et si mon client ne sait pas partager sa position ?", ff: "So soodoowo am anndaa nelde nokkuure mum ?" },
+  "home.faq2a": {
+    fr: "Il ouvre le lien et appuie sur un seul bouton. S'il n'y arrive pas, il écrit un point de repère et le livreur l'appelle.",
+    ff: "O udditan liŋ, o ŋoppa butoŋ gooto tan. So o waawaa, o winnda maande, naɓoowo noddan mo.",
+  },
+  "home.faq3q": { fr: "Quelles zones sont couvertes ?", ff: "Nokkuuje ɗe moy ɗe on naɓata ?" },
+  "home.faq3a": {
+    fr: "Toute la ville de Ngaoundéré, Dang et Bini. D'autres quartiers seront ajoutés avec nos prochains livreurs.",
+    ff: "Wuro Ngaoundéré fof, Dang e Bini. Nokkuuje goɗɗe ɓeydoto e naɓooɓe hesɓe.",
+  },
+  "home.faq4q": { fr: "Quand suis-je payé ?", ff: "Ndey mi yoɓete ?" },
+  "home.faq4a": {
+    fr: "Chaque soir, par MoMo ou Orange Money, pour toutes les courses livrées dans la journée.",
+    ff: "Kikiiɗe kala, e MoMo maa Orange Money, ngam naɓgol fof ngol hewtinaa ñalawma ɗon.",
+  },
+  "home.ctaTitle": { fr: "Votre première course vous attend.", ff: "Naɓgol maa aranol ina sabbii ma." },
+  "home.ctaText": { fr: "Inscription gratuite. Vous ne payez que les courses.", ff: "Winndugol ina yoɓaaka. A yoɓan naɓgol tan." },
+  "home.footer": { fr: "Livraison pour les commerces de Ngaoundéré.", ff: "Naɓgol kaake ngam jeeyooɓe Ngaoundéré." },
+
+  // ——— Connexion / inscription ———
+  "auth.loginTitle": { fr: "Connexion", ff: "Naatgol" },
+  "auth.noAccount": { fr: "Vous êtes commerçant ?", ff: "A jeeyoowo ?" },
+  "auth.createAccount": { fr: "Créez votre compte", ff: "Waɗu konte maa" },
+  "auth.registerTitle": { fr: "Compte commerçant", ff: "Konte jeeyoowo" },
+  "auth.registerSub": { fr: "Gratuit. Vous ne payez que les courses.", ff: "Ina yoɓaaka. A yoɓan naɓgol tan." },
+  "auth.already": { fr: "Déjà inscrit ?", ff: "A winndii law ?" },
+  "auth.shopName": { fr: "Nom du commerce", ff: "Innde bitik" },
+  "auth.yourName": { fr: "Votre nom", ff: "Innde maa" },
+  "auth.whatsapp": { fr: "Téléphone (WhatsApp)", ff: "Telefon (WhatsApp)" },
+  "auth.where": { fr: "Où se trouve le commerce ?", ff: "Bitik ina to moy ?" },
+  "auth.wherePh": { fr: "Ex. Grand marché, face à la pharmacie du Lac", ff: "Misal : Luumo mawngo, yeeso farmasi Lac" },
+  "auth.gpsHint": {
+    fr: "Si vous êtes dans votre commerce maintenant, enregistrez sa position GPS : le prix des courses sera calculé automatiquement.",
+    ff: "So a woni e bitik maa jooni, winndu nokkuure GPS mayru : coggu naɓgol limtete hoore mum.",
+  },
+  "auth.submitRegister": { fr: "Créer mon compte commerçant", ff: "Waɗu konte am" },
+
+  // ——— Commerçant ———
+  "m.navCourses": { fr: "Mes courses", ff: "Naɓe am" },
+  "m.navNew": { fr: "+ Nouvelle course", ff: "+ Naɓgol hesngol" },
+  "m.navShop": { fr: "Mon commerce", ff: "Bitik am" },
+  "m.hello": { fr: "Bonjour", ff: "Jam" },
+  "m.newShort": { fr: "+ Course", ff: "+ Naɓgol" },
+  "m.noGps": { fr: "La position GPS de votre commerce n'est pas encore enregistrée : le prix ne peut pas être calculé automatiquement.", ff: "Nokkuure GPS bitik maa winndaaka tawo : coggu limtataake hoore mum." },
+  "m.saveIt": { fr: "L'enregistrer", ff: "Winndu ɗum" },
+  "m.active": { fr: "En cours", ff: "Ina waɗee" },
+  "m.toReceive": { fr: "À vous reverser", ff: "Ceede maa" },
+  "m.delivered": { fr: "course(s) livrée(s)", ff: "naɓgol hewtinaangol" },
+  "m.latest": { fr: "Dernières courses", ff: "Naɓe sakkitiiɗe" },
+  "m.none": { fr: "Aucune course pour l'instant. Créez la première !", ff: "Naɓgol walaa tawo. Waɗu aranol !" },
+  "m.newTitle": { fr: "Nouvelle course", ff: "Naɓgol hesngol" },
+  "m.customerName": { fr: "Nom du client", ff: "Innde soodoowo" },
+  "m.customerPhone": { fr: "Téléphone du client", ff: "Telefon soodoowo" },
+  "m.package": { fr: "Colis", ff: "Kaake" },
+  "m.packagePh": { fr: "Ex. 2 pagnes, 1 sac à main", ff: "Misal : pagne 2, saak 1" },
+  "m.amount": { fr: "Montant à encaisser auprès du client (FCFA)", ff: "Ceede ɗe soodoowo yoɓata (FCFA)" },
+  "m.amountPh": { fr: "0 si déjà payé", ff: "0 so o yoɓii law" },
+  "m.landmark": { fr: "Repère du client (facultatif)", ff: "Maande soodoowo (so a yiɗi)" },
+  "m.landmarkPh": { fr: "Ex. Dang, mini-cité Les Palmiers", ff: "Misal : Dang, mini-cité Les Palmiers" },
+  "m.heavy": { fr: "Colis lourd ou volumineux", ff: "Kaake teddhuɗe maa mawɗe" },
+  "m.create": { fr: "Créer la course", ff: "Waɗu naɓgol" },
+  "m.createHint": { fr: "Ensuite, vous enverrez au client un lien pour qu'il partage sa position.", ff: "Ɓaawo ɗum, neldu soodoowo liŋ ngam o nelda nokkuure mum." },
+  "m.created": { fr: "Course créée. Envoyez maintenant le lien au client.", ff: "Naɓgol waɗaama. Neldu soodoowo liŋ jooni." },
+  "m.sendLink": { fr: "1. Envoyez ce lien au client", ff: "1. Neldu soodoowo liŋ ɗo" },
+  "m.sendLinkHint": { fr: "Il l'ouvre et appuie sur « Partager ma position ». Cette page se met à jour toute seule.", ff: "O udditan ɗum, o ŋoppa « Neldu nokkuure am ». Hello ɗo hesɗitintoo hoore mum." },
+  "m.sendWhatsapp": { fr: "Envoyer par WhatsApp", ff: "Neldu e WhatsApp" },
+  "m.bySms": { fr: "Par SMS", ff: "E SMS" },
+  "m.customerPos": { fr: "Position client", ff: "Nokkuure soodoowo" },
+  "m.seeMap": { fr: "Voir sur la carte", ff: "Ndaar e karte" },
+  "m.waiting": { fr: "En attente", ff: "Ina sabbii" },
+  "m.distance": { fr: "Distance", ff: "Juutugol" },
+  "m.price": { fr: "Prix de la course", ff: "Coggu naɓgol" },
+  "m.driver": { fr: "Livreur", ff: "Naɓoowo" },
+  "m.failReason": { fr: "Motif de l'échec", ff: "Ko haɗi" },
+  "m.history": { fr: "Historique", ff: "Taariha" },
+  "m.hCreated": { fr: "Créée", ff: "Waɗaa" },
+  "m.hLocated": { fr: "Position reçue", ff: "Nokkuure hewtii" },
+  "m.hAssigned": { fr: "Livreur assigné", ff: "Naɓoowo suɓaama" },
+  "m.hPicked": { fr: "Colis récupéré", ff: "Kaake ƴettaama" },
+  "m.hDelivered": { fr: "Livrée", ff: "Hewtinaama" },
+  "m.hSettled": { fr: "Reversée", ff: "Ceede ndutti" },
+  "m.no": { fr: "Non", ff: "Alaa" },
+  "m.cancel": { fr: "Annuler la course", ff: "Haɗu naɓgol" },
+  "m.shopTitle": { fr: "Mon commerce", ff: "Bitik am" },
+  "m.shop": { fr: "Commerce", ff: "Bitik" },
+  "m.owner": { fr: "Responsable", ff: "Jeyɗo" },
+  "m.pickup": { fr: "Adresse de retrait", ff: "Nokkuure ƴettugol kaake" },
+  "m.pickupHint": { fr: "Placez-vous dans votre commerce et appuyez sur le bouton : c'est ici que le livreur viendra chercher les colis.", ff: "Won e bitik maa, ŋoppu butoŋ : ɗoon naɓoowo arata ƴettude kaake." },
+  "m.pickupLandmark": { fr: "Repère du commerce", ff: "Maande bitik" },
+  "m.save": { fr: "Enregistrer", ff: "Winndu" },
+
+  // ——— Client ———
+  "c.hello": { fr: "Bonjour", ff: "Jam" },
+  "c.arriving": { fr: "Votre colis de {shop} arrive bientôt", ff: "Kaake maa ummiiɗe ka {shop} ngaroto jooni" },
+  "c.toPay": { fr: "À payer à la livraison", ff: "Ceede yoɓeteeɗe" },
+  "c.landmark": { fr: "Point de repère (facultatif)", ff: "Maande (so a yiɗi)" },
+  "c.landmarkPh": { fr: "Ex. derrière la mosquée, portail bleu", ff: "Misal : caggal juulirde, damal bulaajo" },
+  "c.share": { fr: "Partager ma position", ff: "Neldu nokkuure am" },
+  "c.locating": { fr: "Recherche de votre position…", ff: "Ina yiyloo nokkuure maa…" },
+  "c.sending": { fr: "Envoi…", ff: "Ina nelda…" },
+  "c.allow": { fr: "Le navigateur va demander l'autorisation d'utiliser votre position : appuyez sur « Autoriser ».", ff: "Navigateur naamnoto ma : ŋoppu « Autoriser »." },
+  "c.denied": { fr: "Nous n'avons pas pu obtenir votre position. Vérifiez que la localisation du téléphone est activée, puis réessayez et appuyez sur « Autoriser ».", ff: "Min keɓaali nokkuure maa. Ndaar so « localisation » telefon maa udditaa, fuɗɗito, ŋoppu « Autoriser »." },
+  "c.orLandmark": { fr: "Sinon, écrivez un point de repère précis ci-dessus et envoyez-le :", ff: "So wonaa ɗum, winndu maande laaɓnde dow, neldu ɗum :" },
+  "c.sendLandmark": { fr: "Envoyer seulement le point de repère", ff: "Neldu maande tan" },
+  "c.thanks": { fr: "Position bien reçue, merci !", ff: "Nokkuure hewtii, a jaaraama !" },
+  "c.thanksText": { fr: "Le livreur vous appellera en arrivant. Gardez votre téléphone près de vous.", ff: "Naɓoowo noddoto ma so o yottii. Jogo telefon maa ɓadiima." },
+  "c.moved": { fr: "Je ne suis plus au même endroit", ff: "Mi woodaa ka nokkuure ɗon kadi" },
+  "c.finished": { fr: "Cette livraison est terminée. Merci !", ff: "Naɓgol ngol timmii. A jaaraama !" },
+  "c.privacy": { fr: "Votre position sert uniquement à cette livraison.", ff: "Nokkuure maa huutortoo ngam naɓgol ngol tan." },
+  "c.error": { fr: "Une erreur est survenue.", ff: "Juumre waɗii." },
+
+  // ——— Livreur ———
+  "d.title": { fr: "Mes courses", ff: "Naɓe am" },
+  "d.hello": { fr: "Bonjour", ff: "Jam" },
+  "d.todo": { fr: "À faire", ff: "Ɗe waɗetee" },
+  "d.done24": { fr: "Livrées (24 h)", ff: "Hewtinaaɗe (24 h)" },
+  "d.cash": { fr: "Encaissé", ff: "Ceede heɓaaɗe" },
+  "d.none": { fr: "Aucune course pour le moment.", ff: "Naɓgol walaa jooni." },
+  "d.pickup": { fr: "1 · Retrait", ff: "1 · Ƴettugol" },
+  "d.drop": { fr: "2 · Livraison", ff: "2 · Hewtingol" },
+  "d.noLandmark": { fr: "Pas de repère", ff: "Maande walaa" },
+  "d.package": { fr: "Colis", ff: "Kaake" },
+  "d.collect": { fr: "À encaisser", ff: "Ceede ƴettetee" },
+  "d.picked": { fr: "J'ai récupéré le colis", ff: "Mi ƴettii kaake" },
+  "d.delivered": { fr: "Livré ✓", ff: "Hewtinaama ✓" },
+  "d.collected": { fr: "encaissés", ff: "heɓaama" },
+  "d.fail": { fr: "Signaler un échec", ff: "Habru juumre" },
+  "d.failConfirm": { fr: "Confirmer l'échec", ff: "Tabitin juumre" },
+  "d.r1": { fr: "Client injoignable", ff: "Soodoowo heɓotaake e telefon" },
+  "d.r2": { fr: "Client absent", ff: "Soodoowo walaa" },
+  "d.r3": { fr: "Client a refusé le colis", ff: "Soodoowo salii kaake" },
+  "d.r4": { fr: "Commerce fermé", ff: "Bitik uddaama" },
+  "d.r5": { fr: "Adresse introuvable", ff: "Nokkuure yiytaaka" },
+} as const;
+
+export type DictKey = keyof typeof dict;
+
+export function translate(lang: Lang, key: DictKey, vars?: Record<string, string | number>): string {
+  let s: string = dict[key]?.[lang] ?? dict[key]?.fr ?? key;
+  if (vars) for (const [k, v] of Object.entries(vars)) s = s.replace(`{${k}}`, String(v));
+  return s;
+}
+
+export function isLang(v: string | undefined): v is Lang {
+  return !!v && (LANGS as readonly string[]).includes(v);
+}
+
+export type TFn = (key: DictKey, vars?: Record<string, string | number>) => string;

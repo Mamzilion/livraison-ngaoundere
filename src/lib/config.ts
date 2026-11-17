@@ -1,4 +1,4 @@
-export const APP_NAME = process.env.NEXT_PUBLIC_APP_NAME || "Ngaoundéré Livraison";
+export const APP_NAME = process.env.NEXT_PUBLIC_APP_NAME || "Babana";
 
 /** URL publique du site, utilisée dans les liens envoyés aux clients et aux livreurs. */
 export function appUrl(): string {

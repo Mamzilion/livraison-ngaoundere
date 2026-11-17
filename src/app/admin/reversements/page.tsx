@@ -32,7 +32,7 @@ export default async function SettlementsPage() {
 
   return (
     <Page>
-      <h1 className="text-2xl font-bold">Reversements du jour</h1>
+      <h1 className="display text-3xl">Reversements du jour</h1>
       <p className="text-sm text-stone-600">
         Montant à reverser = argent encaissé auprès des clients − prix des courses. Un montant négatif signifie que
         le commerçant nous doit les frais.

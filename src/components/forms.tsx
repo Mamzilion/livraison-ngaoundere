@@ -5,123 +5,124 @@ import { login, registerMerchant } from "@/app/actions/auth";
 import { createDelivery, updatePickup } from "@/app/actions/merchant";
 import { adminSetDropLocation, createDriver } from "@/app/actions/admin";
 import { PRICING } from "@/lib/pricing";
-import { Alert } from "./ui";
+import { useT } from "./i18n";
 import { LocateFields, SubmitButton } from "./client";
 
 function Messages({ state }: { state: { error?: string; ok?: string } | undefined }) {
-  if (state?.error) return <Alert kind="error">{state.error}</Alert>;
-  if (state?.ok) return <Alert kind="ok">{state.ok}</Alert>;
+  if (state?.error)
+    return <div className="animate-fade-up rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">{state.error}</div>;
+  if (state?.ok)
+    return <div className="animate-fade-up rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">{state.ok}</div>;
   return null;
 }
 
 export function LoginForm({ next }: { next?: string }) {
   const [state, action] = useActionState(login, undefined);
+  const t = useT();
   return (
     <form action={action} className="space-y-4">
       <input type="hidden" name="suite" value={next ?? ""} />
       <div>
-        <label className="label" htmlFor="phone">Téléphone</label>
+        <label className="label" htmlFor="phone">{t("common.phone")}</label>
         <input className="input" id="phone" name="phone" inputMode="tel" placeholder="677 11 22 33" required />
       </div>
       <div>
-        <label className="label" htmlFor="password">Mot de passe</label>
+        <label className="label" htmlFor="password">{t("common.password")}</label>
         <input className="input" id="password" name="password" type="password" required />
       </div>
       <Messages state={state} />
-      <SubmitButton>Se connecter</SubmitButton>
+      <SubmitButton pendingText={t("common.wait")}>{t("common.login")}</SubmitButton>
     </form>
   );
 }
 
 export function RegisterForm() {
   const [state, action] = useActionState(registerMerchant, undefined);
+  const t = useT();
   return (
     <form action={action} className="space-y-4">
       <div>
-        <label className="label" htmlFor="shopName">Nom du commerce</label>
+        <label className="label" htmlFor="shopName">{t("auth.shopName")}</label>
         <input className="input" id="shopName" name="shopName" placeholder="Boutique Mama Aïssa" required />
       </div>
       <div>
-        <label className="label" htmlFor="name">Votre nom</label>
+        <label className="label" htmlFor="name">{t("auth.yourName")}</label>
         <input className="input" id="name" name="name" required />
       </div>
       <div>
-        <label className="label" htmlFor="phone">Téléphone (WhatsApp)</label>
+        <label className="label" htmlFor="phone">{t("auth.whatsapp")}</label>
         <input className="input" id="phone" name="phone" inputMode="tel" placeholder="677 11 22 33" required />
       </div>
       <div>
-        <label className="label" htmlFor="password">Mot de passe</label>
+        <label className="label" htmlFor="password">{t("common.password")}</label>
         <input className="input" id="password" name="password" type="password" minLength={6} required />
       </div>
       <div>
-        <label className="label" htmlFor="pickupLandmark">Où se trouve le commerce ?</label>
+        <label className="label" htmlFor="pickupLandmark">{t("auth.where")}</label>
         <input
           className="input"
           id="pickupLandmark"
           name="pickupLandmark"
-          placeholder="Ex. Grand marché, face à la pharmacie du Lac"
+          placeholder={t("auth.wherePh")}
           required
         />
       </div>
-      <div className="rounded-xl bg-brand-50 p-3 text-sm text-brand-900">
-        Si vous êtes dans votre commerce maintenant, enregistrez sa position GPS : le prix des courses sera
-        calculé automatiquement. Vous pourrez aussi le faire plus tard.
-      </div>
+      <div className="rounded-2xl bg-brand-50 p-4 text-sm text-brand-800">{t("auth.gpsHint")}</div>
       <LocateFields />
       <Messages state={state} />
-      <SubmitButton>Créer mon compte commerçant</SubmitButton>
+      <SubmitButton pendingText={t("common.wait")}>{t("auth.submitRegister")}</SubmitButton>
     </form>
   );
 }
 
 export function NewDeliveryForm() {
   const [state, action] = useActionState(createDelivery, undefined);
+  const t = useT();
   return (
     <form action={action} className="space-y-4">
       <div>
-        <label className="label" htmlFor="customerName">Nom du client</label>
+        <label className="label" htmlFor="customerName">{t("m.customerName")}</label>
         <input className="input" id="customerName" name="customerName" required />
       </div>
       <div>
-        <label className="label" htmlFor="customerPhone">Téléphone du client</label>
+        <label className="label" htmlFor="customerPhone">{t("m.customerPhone")}</label>
         <input className="input" id="customerPhone" name="customerPhone" inputMode="tel" placeholder="699 11 22 33" required />
       </div>
       <div>
-        <label className="label" htmlFor="packageDesc">Colis</label>
-        <input className="input" id="packageDesc" name="packageDesc" placeholder="Ex. 2 pagnes, 1 sac à main" required />
+        <label className="label" htmlFor="packageDesc">{t("m.package")}</label>
+        <input className="input" id="packageDesc" name="packageDesc" placeholder={t("m.packagePh")} required />
       </div>
       <div>
-        <label className="label" htmlFor="amountToCollect">Montant à encaisser auprès du client (FCFA)</label>
-        <input className="input" id="amountToCollect" name="amountToCollect" type="number" min={0} step={50} placeholder="0 si déjà payé" />
+        <label className="label" htmlFor="amountToCollect">{t("m.amount")}</label>
+        <input className="input" id="amountToCollect" name="amountToCollect" type="number" min={0} step={50} placeholder={t("m.amountPh")} />
       </div>
       <div>
-        <label className="label" htmlFor="dropLandmark">Repère du client (facultatif)</label>
-        <input className="input" id="dropLandmark" name="dropLandmark" placeholder="Ex. Dang, mini-cité Les Palmiers" />
+        <label className="label" htmlFor="dropLandmark">{t("m.landmark")}</label>
+        <input className="input" id="dropLandmark" name="dropLandmark" placeholder={t("m.landmarkPh")} />
       </div>
-      <label className="flex items-center gap-3 rounded-xl border border-stone-200 bg-white p-3 text-sm">
-        <input type="checkbox" name="heavy" className="h-5 w-5 accent-brand-700" />
-        Colis lourd ou volumineux (+{PRICING.heavySupplement} FCFA)
+      <label className="flex cursor-pointer items-center gap-3 rounded-2xl border border-line bg-cream p-4 text-sm transition has-[:checked]:border-brand-600 has-[:checked]:bg-brand-50">
+        <input type="checkbox" name="heavy" className="h-5 w-5 accent-brand-600" />
+        {t("m.heavy")} (+{PRICING.heavySupplement} FCFA)
       </label>
       <Messages state={state} />
-      <SubmitButton>Créer la course</SubmitButton>
-      <p className="text-center text-xs text-stone-500">
-        Ensuite, vous enverrez au client un lien pour qu&apos;il partage sa position.
-      </p>
+      <SubmitButton pendingText={t("common.wait")}>{t("m.create")}</SubmitButton>
+      <p className="text-center text-xs text-muted">{t("m.createHint")}</p>
     </form>
   );
 }
 
 export function PickupForm({ landmark, lat, lng }: { landmark: string; lat: number | null; lng: number | null }) {
   const [state, action] = useActionState(updatePickup, undefined);
+  const t = useT();
   return (
     <form action={action} className="space-y-3">
       <div>
-        <label className="label" htmlFor="pickupLandmark">Repère du commerce</label>
+        <label className="label" htmlFor="pickupLandmark">{t("m.pickupLandmark")}</label>
         <input className="input" id="pickupLandmark" name="pickupLandmark" defaultValue={landmark} required />
       </div>
       <LocateFields initialLat={lat} initialLng={lng} />
       <Messages state={state} />
-      <SubmitButton>Enregistrer</SubmitButton>
+      <SubmitButton pendingText={t("common.wait")}>{t("m.save")}</SubmitButton>
     </form>
   );
 }

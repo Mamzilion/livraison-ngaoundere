@@ -36,7 +36,7 @@ export default async function AdminDeliveryPage({ params }: { params: Promise<{ 
       <div className="flex items-center justify-between gap-3">
         <div>
           <p className="text-sm text-stone-500">{d.code} · {formatDateTime(d.createdAt)}</p>
-          <h1 className="text-2xl font-bold">{m.shopName} → {d.customerName}</h1>
+          <h1 className="display text-3xl">{m.shopName} → {d.customerName}</h1>
         </div>
         <StatusBadge status={d.status} />
       </div>

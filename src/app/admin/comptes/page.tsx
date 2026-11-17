@@ -41,7 +41,7 @@ export default async function AccountsPage() {
 
   return (
     <Page>
-      <h1 className="text-2xl font-bold">Livreurs &amp; commerçants</h1>
+      <h1 className="display text-3xl">Livreurs &amp; commerçants</h1>
       <div className="card space-y-3">
         <h2 className="font-semibold">Ajouter un livreur</h2>
         <DriverForm />

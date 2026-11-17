@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useT } from "@/components/i18n";
 
 type Phase = "idle" | "locating" | "sending" | "done" | "denied" | "error";
 
@@ -13,6 +14,7 @@ export function ShareLocation({
   alreadyShared: boolean;
   initialLandmark: string;
 }) {
+  const t = useT();
   const [phase, setPhase] = useState<Phase>(alreadyShared ? "done" : "idle");
   const [landmark, setLandmark] = useState(initialLandmark);
   const [message, setMessage] = useState("");
@@ -26,18 +28,16 @@ export function ShareLocation({
     });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) {
-      setMessage(data.error ?? "Une erreur est survenue.");
+      setMessage(data.error ?? t("c.error"));
       setPhase("error");
       return;
     }
+    if (navigator.vibrate) navigator.vibrate(60);
     setPhase("done");
   }
 
   function share() {
-    if (!navigator.geolocation) {
-      setPhase("denied");
-      return;
-    }
+    if (!navigator.geolocation) return setPhase("denied");
     setPhase("locating");
     navigator.geolocation.getCurrentPosition(
       (p) =>
@@ -55,60 +55,59 @@ export function ShareLocation({
   if (phase === "done") {
     return (
       <div className="space-y-3">
-        <div className="rounded-xl bg-emerald-50 p-4 text-center text-emerald-800">
-          <div className="text-3xl">✅</div>
-          <div className="mt-1 font-semibold">Position bien reçue, merci !</div>
-          <div className="text-sm">Le livreur vous appellera en arrivant. Gardez votre téléphone près de vous.</div>
+        <div className="animate-pop rounded-3xl bg-emerald-50 p-6 text-center text-emerald-900">
+          <svg viewBox="0 0 52 52" className="check-draw mx-auto h-16 w-16" aria-hidden>
+            <circle cx="26" cy="26" r="24" fill="#10b981" />
+            <path d="M15 27l7 7 15-15" fill="none" stroke="#fff" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          <div className="display mt-3 text-xl">{t("c.thanks")}</div>
+          <div className="mt-1 text-sm">{t("c.thanksText")}</div>
         </div>
         <button className="btn-ghost w-full" onClick={() => setPhase("idle")}>
-          Je ne suis plus au même endroit
+          {t("c.moved")}
         </button>
       </div>
     );
   }
 
+  const busy = phase === "locating" || phase === "sending";
+
   return (
     <div className="space-y-4">
       <div>
-        <label className="label" htmlFor="landmark">Point de repère (facultatif)</label>
+        <label className="label" htmlFor="landmark">{t("c.landmark")}</label>
         <input
           id="landmark"
           className="input"
           value={landmark}
           onChange={(e) => setLandmark(e.target.value)}
-          placeholder="Ex. derrière la mosquée, portail bleu"
+          placeholder={t("c.landmarkPh")}
         />
       </div>
 
-      <button
-        className="btn-primary w-full py-4 text-base"
-        onClick={share}
-        disabled={phase === "locating" || phase === "sending"}
-      >
-        📍 {phase === "locating" ? "Recherche de votre position…" : phase === "sending" ? "Envoi…" : "Partager ma position"}
+      <button className="btn-primary relative w-full overflow-hidden !py-5 text-base" onClick={share} disabled={busy}>
+        {!busy && <span className="absolute inset-0 animate-pulse rounded-full bg-white/10" aria-hidden />}
+        <span className="relative">
+          📍 {phase === "locating" ? t("c.locating") : phase === "sending" ? t("c.sending") : t("c.share")}
+        </span>
       </button>
 
       {phase === "denied" && (
-        <div className="space-y-3 rounded-xl bg-amber-50 p-3 text-sm text-amber-900">
-          <p>
-            Nous n&apos;avons pas pu obtenir votre position. Vérifiez que la <strong>localisation</strong> du téléphone
-            est activée, puis réessayez et appuyez sur <strong>« Autoriser »</strong>.
-          </p>
-          <p>Sinon, écrivez un point de repère précis ci-dessus et envoyez-le :</p>
+        <div className="animate-fade-up space-y-3 rounded-2xl bg-amber-50 p-4 text-sm text-amber-900">
+          <p>{t("c.denied")}</p>
+          <p>{t("c.orLandmark")}</p>
           <button
             className="btn-ghost w-full"
             disabled={landmark.trim().length < 3}
             onClick={() => send({ landmark: landmark.trim() })}
           >
-            Envoyer seulement le point de repère
+            {t("c.sendLandmark")}
           </button>
         </div>
       )}
       {phase === "error" && <p className="text-sm text-rose-700">{message}</p>}
 
-      <p className="text-center text-xs text-stone-500">
-        Le navigateur va vous demander l&apos;autorisation d&apos;utiliser votre position : appuyez sur « Autoriser ».
-      </p>
+      <p className="text-center text-xs text-muted">{t("c.allow")}</p>
     </div>
   );
 }

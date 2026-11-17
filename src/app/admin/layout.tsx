@@ -4,7 +4,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   return (
     <>
       <AppHeader
-        title="Administration"
+        lang={false}
         links={[
           { href: "/admin", label: "Courses" },
           { href: "/admin/reversements", label: "Reversements" },

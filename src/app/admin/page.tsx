@@ -38,7 +38,7 @@ export default async function AdminHome({ searchParams }: { searchParams: Promis
   return (
     <Page>
       <AutoRefresh seconds={15} />
-      <h1 className="text-2xl font-bold">Courses</h1>
+      <h1 className="display text-3xl">Courses</h1>
       <div className="grid grid-cols-3 gap-3">
         <Stat label="À assigner" value={toAssign.n} />
         <Stat label="Livrées 24 h" value={last24.n} />

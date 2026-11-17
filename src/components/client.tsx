@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useFormStatus } from "react-dom";
+import { useT } from "./i18n";
 
 export function SubmitButton({
   children,
@@ -21,8 +22,9 @@ export function SubmitButton({
   );
 }
 
-export function CopyButton({ text, label = "Copier le lien" }: { text: string; label?: string }) {
+export function CopyButton({ text, label }: { text: string; label?: string }) {
   const [done, setDone] = useState(false);
+  const t = useT();
   return (
     <button
       type="button"
@@ -37,7 +39,7 @@ export function CopyButton({ text, label = "Copier le lien" }: { text: string; l
         }
       }}
     >
-      {done ? "Copié ✓" : label}
+      {done ? t("common.copied") : (label ?? t("common.copyLink"))}
     </button>
   );
 }
@@ -68,6 +70,7 @@ export function LocateFields({
     initialLat != null && initialLng != null ? { lat: initialLat, lng: initialLng } : null,
   );
   const [state, setState] = useState<"idle" | "loading" | "error">("idle");
+  const t = useT();
   return (
     <div className="space-y-2">
       <input type="hidden" name={latName} value={coords?.lat ?? ""} />
@@ -88,16 +91,16 @@ export function LocateFields({
           );
         }}
       >
-        📍 {state === "loading" ? "Recherche de la position…" : "Utiliser ma position actuelle"}
+        📍 {state === "loading" ? t("common.locating") : t("common.useMyPosition")}
       </button>
       {coords && (
         <p className="text-xs text-emerald-700">
-          Position enregistrée : {coords.lat.toFixed(5)}, {coords.lng.toFixed(5)}
+          ✓ {t("common.positionSaved")} : {coords.lat.toFixed(5)}, {coords.lng.toFixed(5)}
         </p>
       )}
       {state === "error" && (
         <p className="text-xs text-rose-700">
-          Impossible d&apos;obtenir la position. Activez la localisation du téléphone et autorisez le navigateur.
+          {t("common.positionError")}
         </p>
       )}
     </div>

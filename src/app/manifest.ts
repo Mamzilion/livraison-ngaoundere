@@ -8,8 +8,8 @@ export default function manifest(): MetadataRoute.Manifest {
     description: "Livraison pour les commerces de Ngaoundéré",
     start_url: "/connexion",
     display: "standalone",
-    background_color: "#f6f7f5",
-    theme_color: "#0f766e",
+    background_color: "#f5f0e8",
+    theme_color: "#f26b1d",
     icons: [{ src: "/icon.svg", sizes: "any", type: "image/svg+xml" }],
   };
 }
