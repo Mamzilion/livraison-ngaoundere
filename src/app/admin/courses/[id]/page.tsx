@@ -94,7 +94,9 @@ export default async function AdminDeliveryPage({ params }: { params: Promise<{ 
         <h2 className="font-semibold">Livraison</h2>
         <div>
           <Row label="Client">{d.customerName} · {displayPhone(d.customerPhone)}</Row>
-          <Row label="Colis">{d.packageDesc}{d.heavy ? " (lourd)" : ""}</Row>
+          <Row label="Colis">{d.packageDesc}</Row>
+          <Row label="Poids">{d.weightKg != null ? `${String(d.weightKg).replace(".", ",")} kg` : d.heavy ? "lourd (ancien tarif)" : "≤ 5 kg"}</Row>
+          {d.declaredValue != null && <Row label="Valeur déclarée">{fcfa(d.declaredValue)} · garantie {fcfa(d.insuranceFee)}</Row>}
           <Row label="À encaisser">{fcfa(d.amountToCollect)}</Row>
           <Row label="Repère">{d.dropLandmark ?? "—"}</Row>
           <Row label="GPS">

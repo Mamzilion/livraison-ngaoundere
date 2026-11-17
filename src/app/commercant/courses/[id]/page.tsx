@@ -83,7 +83,11 @@ export default async function DeliveryPage({
 
       <div className="card">
         <Row label={t("m.customerPhone")}>{displayPhone(d.customerPhone)}</Row>
-        <Row label={t("m.package")}>{d.packageDesc}{d.heavy ? " (+)" : ""}</Row>
+        <Row label={t("m.package")}>{d.packageDesc}</Row>
+        {d.weightKg != null && <Row label={t("m.weightRow")}>{String(d.weightKg).replace(".", ",")} kg</Row>}
+        {d.declaredValue != null && (
+          <Row label={t("m.declaredRow")}>{fcfa(d.declaredValue)} · {t("m.feeRow")} {fcfa(d.insuranceFee)}</Row>
+        )}
         <Row label={t("d.collect")}>{fcfa(d.amountToCollect)}</Row>
         <Row label={t("m.landmark")}>{d.dropLandmark ?? "—"}</Row>
         <Row label={t("m.customerPos")}>

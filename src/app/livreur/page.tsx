@@ -86,7 +86,7 @@ export default async function DriverPage() {
               </div>
 
               <div className="text-sm">
-                <div>{t("d.package")} : <strong>{d.packageDesc}</strong>{d.heavy ? " (+)" : ""}</div>
+                <div>{t("d.package")} : <strong>{d.packageDesc}</strong>{d.weightKg != null ? ` · ${String(d.weightKg).replace(".", ",")} kg` : ""}</div>
                 <div>{t("d.collect")} : <strong>{fcfa(d.amountToCollect)}</strong></div>
               </div>
 

@@ -3,6 +3,10 @@ import { desc, eq } from "drizzle-orm";
 import { AutoRefresh } from "@/components/client";
 import { Reveal } from "@/components/motion";
 import { Alert, Page, Stat, StatusBadge } from "@/components/ui";
+import { TermsBox } from "@/components/forms";
+import { SubmitButton } from "@/components/client";
+import { acceptTerms } from "@/app/actions/merchant";
+import { TERMS_VERSION } from "@/lib/terms";
 import { requireUser } from "@/lib/auth";
 import { db, deliveries as deliveriesTable } from "@/lib/db";
 import { fcfa, formatDateTime } from "@/lib/format";
@@ -20,7 +24,7 @@ export default async function MerchantHome() {
   });
   const active = deliveries.filter((d) => ["WAITING_LOCATION", "READY", "ASSIGNED", "PICKED_UP"].includes(d.status));
   const unsettled = deliveries.filter((d) => d.status === "DELIVERED" && !d.settled);
-  const toReceive = unsettled.reduce((s, d) => s + d.amountToCollect - (d.price ?? 0), 0);
+  const toReceive = unsettled.reduce((s, d) => s + d.amountToCollect - (d.price ?? 0) - d.insuranceFee, 0);
 
   return (
     <Page>
@@ -32,6 +36,16 @@ export default async function MerchantHome() {
         </div>
         <Link href="/commercant/nouvelle" className="btn-primary shrink-0 whitespace-nowrap">{t("m.newShort")}</Link>
       </div>
+
+      {(!me.termsAcceptedAt || me.termsVersion !== TERMS_VERSION) && (
+        <div className="card space-y-3 border-brand-600/40">
+          <p className="text-sm font-medium">{t("m.termsBanner")}</p>
+          <TermsBox />
+          <form action={acceptTerms}>
+            <SubmitButton>{t("m.termsAccept")}</SubmitButton>
+          </form>
+        </div>
+      )}
 
       {me.pickupLat == null && (
         <Alert kind="info">

@@ -5,6 +5,7 @@ import { count, eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import * as schema from "../src/lib/schema";
+import { TERMS_VERSION } from "../src/lib/terms";
 
 const client = postgres(process.env.DIRECT_URL || process.env.DATABASE_URL!, { max: 1 });
 const db = drizzle(client, { schema });
@@ -45,6 +46,8 @@ async function main() {
     pickupLandmark: "Grand marché, rangée des pagnes",
     pickupLat: 7.3225,
     pickupLng: 13.5847,
+    termsAcceptedAt: new Date(),
+    termsVersion: TERMS_VERSION,
   });
   await upsertUser({ name: "Moussa Livreur", phone: phone("670000002"), role: "DRIVER", passwordHash: pw });
   console.log("Démo : commerçant 670000001 / livreur 670000002, mot de passe demo1234");

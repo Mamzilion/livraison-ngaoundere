@@ -28,7 +28,7 @@ export function driverMessage(
     d.dropLandmark ? `Repère : ${d.dropLandmark}` : null,
     d.dropLat != null && d.dropLng != null ? `Itinéraire : ${directionsLink(d.dropLat, d.dropLng)}` : null,
     ``,
-    `Colis : ${d.packageDesc}${d.heavy ? " (lourd/volumineux)" : ""}`,
+    `Colis : ${d.packageDesc}${d.weightKg != null ? ` (${d.weightKg} kg)` : ""}${d.declaredValue ? ` — valeur déclarée ${fcfa(d.declaredValue)}, à manipuler avec soin` : ""}`,
     `À encaisser auprès du client : ${fcfa(d.amountToCollect)}`,
     `Distance : ${d.distanceKm ?? "?"} km — Prix course : ${fcfa(d.price)}`,
     ``,

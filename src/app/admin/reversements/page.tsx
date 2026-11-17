@@ -41,7 +41,7 @@ export default async function SettlementsPage() {
     };
     cur.count += 1;
     cur.collected += d.amountToCollect;
-    cur.fees += d.price ?? 0;
+    cur.fees += (d.price ?? 0) + d.insuranceFee;
     byMerchant.set(d.merchantId, cur);
   }
 
@@ -50,7 +50,7 @@ export default async function SettlementsPage() {
       <h1 className="display text-3xl">Paiements</h1>
       <h2 className="display pt-2 text-xl">Reversements aux commerçants</h2>
       <p className="text-sm text-stone-600">
-        Montant à reverser = argent encaissé auprès des clients − prix des courses. Un montant négatif signifie que
+        Montant à reverser = argent encaissé auprès des clients − prix des courses − garanties. Un montant négatif signifie que
         le commerçant nous doit les frais.
       </p>
       {byMerchant.size === 0 && <div className="card text-center text-sm text-stone-500">Rien à reverser.</div>}
@@ -78,7 +78,7 @@ export default async function SettlementsPage() {
 
       <h2 className="display pt-6 text-xl">Paie des livreurs</h2>
       <p className="text-sm text-muted">
-        Rémunération des courses livrées et pas encore payées (150 FCFA + 30 FCFA/km, +100 FCFA colis lourd ou nuit).
+        Rémunération des courses livrées et pas encore payées (150 FCFA + 30 FCFA/km, moitié du supplément poids, +100 FCFA la nuit).
       </p>
       {byDriver.size === 0 && <div className="card text-center text-sm text-muted">Rien à payer.</div>}
       {[...byDriver.entries()].map(([driverId, r]) => (

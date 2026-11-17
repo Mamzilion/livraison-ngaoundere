@@ -15,6 +15,13 @@
       "when": 1794916176071,
       "tag": "0001_livreurs_et_mdp",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1794936863226,
+      "tag": "0002_poids_et_garantie",
+      "breakpoints": true
     }
   ]
 }

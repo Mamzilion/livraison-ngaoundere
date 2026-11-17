@@ -9,7 +9,8 @@ import { appUrl } from "@/lib/config";
 import { db, deliveries, passwordResets, users } from "@/lib/db";
 import { normalizePhone, randomToken } from "@/lib/format";
 import { hashToken } from "@/lib/tokens";
-import { computeDriverPay, computePrice, roadDistanceKm } from "@/lib/pricing";
+import { computeDriverPay, computePrice, optsOf } from "@/lib/pricing";
+import { roadDistance } from "@/lib/routing";
 import type { FormState } from "./auth";
 
 export async function assignDriver(formData: FormData) {
@@ -51,7 +52,7 @@ export async function adminSetDropLocation(_prev: FormState, formData: FormData)
   const d = await db.query.deliveries.findFirst({ where: eq(deliveries.id, id), with: { merchant: true } });
   if (!d) return { error: "Course introuvable." };
   const m = d.merchant;
-  const km = m.pickupLat != null && m.pickupLng != null ? roadDistanceKm(m.pickupLat, m.pickupLng, lat, lng) : null;
+  const km = m.pickupLat != null && m.pickupLng != null ? (await roadDistance(m.pickupLat, m.pickupLng, lat, lng)).km : null;
   await db
     .update(deliveries)
     .set({
@@ -60,8 +61,8 @@ export async function adminSetDropLocation(_prev: FormState, formData: FormData)
       dropAccuracy: null,
       locatedAt: new Date(),
       distanceKm: km,
-      price: km != null ? computePrice(km, { heavy: d.heavy, night: d.night }) : null,
-      driverPay: km != null ? computeDriverPay(km, { heavy: d.heavy, night: d.night }) : null,
+      price: km != null ? computePrice(km, optsOf(d)) : null,
+      driverPay: km != null ? computeDriverPay(km, optsOf(d)) : null,
       status: d.status === "WAITING_LOCATION" ? "READY" : d.status,
     })
     .where(eq(deliveries.id, id));

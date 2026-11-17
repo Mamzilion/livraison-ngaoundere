@@ -90,19 +90,25 @@ Les commerçants créent leurs courses en ligne, le client partage sa position G
 
 Le prix est calculé selon la distance entre le commerce et le client :
 
-**300 FCFA de prise en charge + 80 FCFA par km**, arrondi aux 50 FCFA supérieurs, **minimum 500 FCFA**.
+**300 FCFA de prise en charge + 100 FCFA par km**, arrondi aux 50 FCFA supérieurs, **minimum 500 FCFA**.
 
-| Distance | Prix |
-| --- | --- |
-| 2 km | 500 FCFA |
-| 5 km | 700 FCFA |
-| 8 km | 950 FCFA |
-| 12 km | 1 300 FCFA |
-| 15 km | 1 500 FCFA |
+| Distance | Prix client | Paie du livreur |
+| --- | --- | --- |
+| 2 km | 500 FCFA | 250 FCFA |
+| 5 km | 800 FCFA | 300 FCFA |
+| 8 km | 1 100 FCFA | 400 FCFA |
+| 12 km | 1 500 FCFA | 550 FCFA |
+| 15 km | 1 800 FCFA | 600 FCFA |
 
-Suppléments : **+200 FCFA** colis lourd ou volumineux, **+200 FCFA** après 19 h.
+**Poids** : compris jusqu'à 5 kg ; de 5 à 20 kg, **50 FCFA par kilo entamé**, dont la moitié pour le livreur ; au-delà de 20 kg, pas de livraison à moto.
+**Nuit** : +200 FCFA après 19 h (dont 100 FCFA pour le livreur).
 
-La distance routière est estimée à partir de la distance à vol d'oiseau (× 1,3). Tous les paramètres se modifient dans [`src/lib/pricing.ts`](src/lib/pricing.ts).
+### Garantie des colis et conditions de service
+- Babana est responsable du colis de la récupération jusqu'à la remise au client.
+- Sans valeur déclarée : remboursement de la valeur réelle jusqu'à 10 000 FCFA. Avec valeur déclarée (jusqu'à 300 000 FCFA) : couverture jusqu'à cette valeur pour 1 % (minimum 100 FCFA), déduit au reversement.
+- Le commerçant accepte les conditions à l'inscription (date et version enregistrées) ; les comptes existants doivent les accepter avant de créer une course. Texte complet : page `/conditions`, contenu dans [`src/lib/terms.ts`](src/lib/terms.ts) (changer `TERMS_VERSION` pour redemander l'acceptation).
+
+La distance est celle du **vrai trajet par la route**, calculée avec [OSRM](https://project-osrm.org) à partir des cartes OpenStreetMap (voir [`src/lib/routing.ts`](src/lib/routing.ts)). Si le service ne répond pas en 4 secondes, la plateforme utilise une estimation (distance à vol d'oiseau × 1,3) pour ne jamais bloquer une course. Les tarifs se modifient dans [`src/lib/pricing.ts`](src/lib/pricing.ts).
 
 ## Technologies
 
@@ -135,6 +141,7 @@ La distance routière est estimée à partir de la distance à vol d'oiseau (× 
    | `ADMIN_PHONE` | Numéro du compte administrateur (ex. `677112233`) |
    | `ADMIN_PASSWORD` | Mot de passe du compte administrateur |
    | `SEED_DEMO` | `1` pour créer des comptes et une course de démonstration |
+| `OSRM_URL` | Facultatif : adresse d'un serveur OSRM (par défaut, le serveur public gratuit) |
 | `NEXT_PUBLIC_SUPPORT_WHATSAPP` | Facultatif : numéro WhatsApp de Babana, proposé sur la page « Mot de passe oublié » |
 
    Pour générer `AUTH_SECRET` :
@@ -236,4 +243,4 @@ Créés avec `SEED_DEMO=1` :
 
 ---
 
-Projet développé par **MAMA DANIEL** — [github.com/Mamzilion](https://github.com/Mamzilion)
+Projet développé par **Abbas Madani** — [github.com/Mamzilion](https://github.com/Mamzilion)

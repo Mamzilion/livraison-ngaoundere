@@ -85,7 +85,7 @@ export default async function Home() {
     t: t(`home.why${i}t` as Parameters<typeof t>[0]),
     d: t(`home.why${i}d` as Parameters<typeof t>[0]),
   }));
-  const faq = [1, 2, 3, 4].map((i) => ({
+  const faq = [1, 2, 5, 3, 4].map((i) => ({
     q: t(`home.faq${i}q` as Parameters<typeof t>[0]),
     a: t(`home.faq${i}a` as Parameters<typeof t>[0]),
   }));
@@ -142,7 +142,7 @@ export default async function Home() {
         <Reveal className="grid overflow-hidden rounded-3xl border border-line bg-paper sm:grid-cols-3">
           {[
             { v: <><CountUp to={500} /> F</>, l: t("home.stat1") },
-            { v: <><CountUp to={80} /> F</>, l: t("home.stat2") },
+            { v: <><CountUp to={100} /> F</>, l: t("home.stat2") },
             { v: t("home.stat3v"), l: t("home.stat3") },
           ].map((s, i) => (
             <div key={i} className="border-line p-6 sm:border-l sm:first:border-l-0 [&:not(:first-child)]:border-t sm:[&:not(:first-child)]:border-t-0">

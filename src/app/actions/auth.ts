@@ -8,6 +8,7 @@ import { and, eq, gt, isNull } from "drizzle-orm";
 import { db, passwordResets, users } from "@/lib/db";
 import { normalizePhone } from "@/lib/format";
 import { hashToken } from "@/lib/tokens";
+import { TERMS_VERSION } from "@/lib/terms";
 import { SESSION_COOKIE, homeFor, sessionCookieOptions, signSession } from "@/lib/session";
 
 export type FormState = { error?: string; ok?: string } | undefined;
@@ -45,6 +46,8 @@ const registerSchema = z.object({
 
 export async function registerMerchant(_prev: FormState, formData: FormData): Promise<FormState> {
   const raw = Object.fromEntries(formData);
+  if (raw.terms !== "on") return { error: "terms" };
+  delete raw.terms;
   if (!raw.pickupLat) delete raw.pickupLat;
   if (!raw.pickupLng) delete raw.pickupLng;
   const parsed = registerSchema.safeParse(raw);
@@ -68,6 +71,8 @@ export async function registerMerchant(_prev: FormState, formData: FormData): Pr
       pickupLandmark: data.pickupLandmark,
       pickupLat: data.pickupLat ?? null,
       pickupLng: data.pickupLng ?? null,
+      termsAcceptedAt: new Date(),
+      termsVersion: TERMS_VERSION,
     })
     .returning();
   await openSession(user);

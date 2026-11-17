@@ -81,8 +81,8 @@ const dict = {
   "home.priceNight": { fr: "Après 19 h", ff: "Ɓaawo 19 h" },
   "home.priceTotal": { fr: "Prix de la course", ff: "Coggu naɓgol" },
   "home.priceFormula": {
-    fr: "300 FCFA de prise en charge + 80 FCFA par km, minimum 500 FCFA.",
-    ff: "300 FCFA fuɗɗoode + 80 FCFA e kilomeeter kala, ɓuri famɗude 500 FCFA.",
+    fr: "300 FCFA de prise en charge + 100 FCFA par km, minimum 500 FCFA.",
+    ff: "300 FCFA fuɗɗoode + 100 FCFA e kilomeeter kala, ɓuri famɗude 500 FCFA.",
   },
   "home.faqLabel": { fr: "Questions fréquentes", ff: "Naamne ɗe ɗuuɗi" },
   "home.faqTitle": { fr: "Vous vous demandez…", ff: "A naamnotoo…" },
@@ -212,6 +212,48 @@ const dict = {
   "m.pickupLandmark": { fr: "Repère du commerce", ff: "Maande bitik" },
   "m.save": { fr: "Enregistrer", ff: "Winndu" },
 
+  "m.weight": { fr: "Poids estimé du colis (kg)", ff: "Teddeengal kaake (kg)" },
+  "m.weightHint": {
+    fr: "Jusqu'à 5 kg : compris dans le prix. Au-delà : 50 FCFA par kg, partagés avec le livreur. Maximum 20 kg.",
+    ff: "Haa kg 5 : ina nder coggu. Ɓuri ɗum : 50 FCFA e kg kala, naɓoowo heɓan feccere. Ɓuri ɗuuɗude kg 20.",
+  },
+  "m.weightExtra": { fr: "Supplément poids : {fee} FCFA", ff: "Ɓeydaari teddeengal : {fee} FCFA" },
+  "m.weightMax": {
+    fr: "Au-delà de 20 kg, le colis ne peut pas partir à moto. Contactez Babana.",
+    ff: "Ɓuri kg 20, kaake naɓataake e moto. Noddu Babana.",
+  },
+  "m.declared": { fr: "Valeur de l'article (facultatif, FCFA)", ff: "Coggu kaake (so a yiɗi, FCFA)" },
+  "m.declaredHint": {
+    fr: "Sans valeur déclarée, l'article est couvert jusqu'à 10 000 FCFA. Déclarez sa valeur pour être couvert en totalité.",
+    ff: "So a winndaani coggu, kaake ndeenete haa 10 000 FCFA. Winndu coggu mayɗe ngam ndeenee fof.",
+  },
+  "m.guaranteeFee": { fr: "Garantie : {fee} FCFA (1 % de la valeur)", ff: "Deenal : {fee} FCFA (1 % coggu)" },
+  "m.declaredMax": { fr: "Valeur maximale acceptée : 300 000 FCFA.", ff: "Coggu ɓurngu mawnude : 300 000 FCFA." },
+  "m.weightRow": { fr: "Poids", ff: "Teddeengal" },
+  "m.declaredRow": { fr: "Valeur déclarée", ff: "Coggu winndaaɗo" },
+  "m.feeRow": { fr: "Garantie", ff: "Deenal" },
+  "m.termsBanner": {
+    fr: "Avant de créer vos courses, prenez connaissance de nos conditions en cas de perte ou de dommage.",
+    ff: "Ado a waɗa naɓe, jangu sarɗiiji amen so kaake majji maa ɓooyi.",
+  },
+  "m.termsTitle": { fr: "Nos conditions en bref", ff: "Sarɗiiji amen e kuɓɓal" },
+  "m.termsAccept": { fr: "J'accepte les conditions", ff: "Mi jaɓii sarɗiiji ɗi" },
+  "m.termsRead": { fr: "Lire les conditions complètes", ff: "Jangu sarɗiiji fof" },
+  "m.termsNeeded": { fr: "Acceptez d'abord les conditions de service (en haut de « Mes courses »).", ff: "Jaɓu sarɗiiji ɗi taho (dow « Naɓe am »)." },
+  "auth.termsCheck": { fr: "J'ai lu et j'accepte les conditions de service", ff: "Mi jangii, mi jaɓii sarɗiiji golle" },
+  "auth.termsRequired": { fr: "Vous devez accepter les conditions de service.", ff: "A foti jaɓude sarɗiiji golle." },
+  "terms.title": { fr: "Conditions de service", ff: "Sarɗiiji golle" },
+  "terms.ffNote": {
+    fr: "Version {v}.",
+    ff: "Binndi sarɗiiji goonga ɗin ina e Faransi. Version {v}.",
+  },
+  "home.priceWeight": { fr: "Poids du colis", ff: "Teddeengal kaake" },
+  "home.faq5q": { fr: "Et si mon article est abîmé pendant la livraison ?", ff: "So kaake am majji e laawol ?" },
+  "home.faq5a": {
+    fr: "Babana est responsable du colis, de la récupération jusqu'à la remise. Sans valeur déclarée, nous remboursons jusqu'à 10 000 FCFA. Pour un article plus cher, déclarez sa valeur : il est couvert en totalité pour 1 % de sa valeur.",
+    ff: "Babana jogii kaake gila ƴettugol haa hokkugol. So a winndaani coggu, min njoɓan haa 10 000 FCFA. Ngam kaake ɓurɗe coggu, winndu coggu mayɗe : ndeenete fof e 1 % coggu.",
+  },
+
   // ——— Client ———
   "c.hello": { fr: "Bonjour", ff: "Jam" },
   "c.arriving": { fr: "Votre colis de {shop} arrive bientôt", ff: "Kaake maa ummiiɗe ka {shop} ngaroto jooni" },
@@ -276,8 +318,8 @@ const dict = {
   "d.toBePaid": { fr: "À recevoir de Babana", ff: "Ceede ɗe Babana yoɓata ma" },
   "d.alreadyPaid": { fr: "Déjà payé", ff: "Yoɓaama law" },
   "d.payFormula": {
-    fr: "150 FCFA par course + 30 FCFA par km. +100 FCFA pour un colis lourd ou une course de nuit.",
-    ff: "150 FCFA e naɓgol kala + 30 FCFA e kilomeeter kala. +100 FCFA ngam kaake teddhuɗe maa naɓgol jemma.",
+    fr: "150 FCFA par course + 30 FCFA par km. Vous touchez la moitié du supplément poids (au-delà de 5 kg) et +100 FCFA la nuit.",
+    ff: "150 FCFA e naɓgol kala + 30 FCFA e kilomeeter kala. A heɓan feccere ɓeydaari teddeengal (ɓuri kg 5) e +100 FCFA jemma.",
   },
   "d.history": { fr: "Courses livrées", ff: "Naɓe hewtinaaɗe" },
   "d.paidLabel": { fr: "Payé", ff: "Yoɓaama" },

@@ -1,16 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import { computePrice } from "@/lib/pricing";
+import { WEIGHT, computePrice, weightSupplement } from "@/lib/pricing";
 import { useT } from "./i18n";
 
 /** Calculateur de prix interactif (curseur de distance + options). */
 export function PriceCalculator() {
   const t = useT();
   const [km, setKm] = useState(5);
-  const [heavy, setHeavy] = useState(false);
+  const [kg, setKg] = useState(3);
   const [night, setNight] = useState(false);
-  const price = computePrice(km, { heavy, night });
+  const price = computePrice(km, { weightKg: kg, night });
+  const extra = weightSupplement(kg);
+  const kgPct = (kg / WEIGHT.maxKg) * 100;
   const pct = ((km - 1) / (20 - 1)) * 100;
 
   return (
@@ -38,9 +40,32 @@ export function PriceCalculator() {
             <span>20 km</span>
           </div>
         </div>
+        <div>
+          <div className="flex items-baseline justify-between">
+            <span className="eyebrow">{t("home.priceWeight")}</span>
+            <span className="display text-2xl">
+              {kg} kg {extra > 0 && <span className="text-base text-brand-700">+{extra} F</span>}
+            </span>
+          </div>
+          <input
+            type="range"
+            min={0}
+            max={WEIGHT.maxKg}
+            step={1}
+            value={kg}
+            onChange={(e) => setKg(Number(e.target.value))}
+            className="mt-4 h-2 w-full cursor-pointer appearance-none rounded-full accent-brand-600"
+            style={{ background: `linear-gradient(90deg, var(--color-brand-600) ${kgPct}%, var(--color-line) ${kgPct}%)` }}
+            aria-label={t("home.priceWeight")}
+          />
+          <div className="mt-2 flex justify-between font-mono text-[11px] text-muted">
+            <span>0 kg</span>
+            <span>≤ {WEIGHT.includedKg} kg : 0 F</span>
+            <span>{WEIGHT.maxKg} kg</span>
+          </div>
+        </div>
         <div className="flex flex-wrap gap-2">
           {[
-            { on: heavy, set: setHeavy, label: `${t("home.priceHeavy")} +200` },
             { on: night, set: setNight, label: `${t("home.priceNight")} +200` },
           ].map((o) => (
             <button

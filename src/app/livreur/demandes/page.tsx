@@ -46,7 +46,9 @@ export default async function RequestsPage() {
             </div>
             <div className="text-right">
               <div className="display text-2xl">{d.distanceKm != null ? `${String(d.distanceKm).replace(".", ",")} km` : "—"}</div>
-              {d.heavy && <div className="text-xs font-semibold text-brand-700">{t("m.heavy")}</div>}
+              {d.weightKg != null && d.weightKg > 5 && (
+                <div className="text-xs font-semibold text-brand-700">{String(d.weightKg).replace(".", ",")} kg</div>
+              )}
             </div>
           </div>
 

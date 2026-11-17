@@ -7,7 +7,9 @@ import { requireUser } from "@/lib/auth";
 import { and, eq, inArray, isNotNull } from "drizzle-orm";
 import { db, deliveries, users } from "@/lib/db";
 import { normalizePhone, randomCode, randomToken } from "@/lib/format";
-import { isNightNow, quote, roadDistanceKm } from "@/lib/pricing";
+import { GUARANTEE, WEIGHT, insuranceFee, isNightNow, optsOf, quote } from "@/lib/pricing";
+import { roadDistance } from "@/lib/routing";
+import { TERMS_VERSION } from "@/lib/terms";
 import type { FormState } from "./auth";
 
 const deliverySchema = z.object({
@@ -15,7 +17,8 @@ const deliverySchema = z.object({
   customerPhone: z.string(),
   packageDesc: z.string().trim().min(2, "Décrivez le colis."),
   amountToCollect: z.coerce.number().int().min(0, "Montant invalide.").default(0),
-  heavy: z.string().optional(),
+  weightKg: z.coerce.number().min(0, "Poids invalide.").max(WEIGHT.maxKg, `max:${WEIGHT.maxKg}`).optional(),
+  declaredValue: z.coerce.number().int().min(0).max(GUARANTEE.maxDeclared, `maxValue:${GUARANTEE.maxDeclared}`).optional(),
   dropLandmark: z.string().trim().optional(),
 });
 
@@ -23,6 +26,9 @@ export async function createDelivery(_prev: FormState, formData: FormData): Prom
   const merchant = await requireUser("MERCHANT");
   const raw = Object.fromEntries(formData);
   if (raw.amountToCollect === "") raw.amountToCollect = "0";
+  if (raw.weightKg === "") delete raw.weightKg;
+  if (raw.declaredValue === "") delete raw.declaredValue;
+  if (!merchant.termsAcceptedAt || merchant.termsVersion !== TERMS_VERSION) return { error: "terms" };
   const parsed = deliverySchema.safeParse(raw);
   if (!parsed.success) return { error: parsed.error.issues[0].message };
   const data = parsed.data;
@@ -45,7 +51,10 @@ export async function createDelivery(_prev: FormState, formData: FormData): Prom
       customerPhone,
       packageDesc: data.packageDesc,
       amountToCollect: data.amountToCollect,
-      heavy: data.heavy === "on",
+      weightKg: data.weightKg ?? null,
+      heavy: (data.weightKg ?? 0) > WEIGHT.includedKg,
+      declaredValue: data.declaredValue || null,
+      insuranceFee: insuranceFee(data.declaredValue),
       night: isNightNow(),
       dropLandmark: data.dropLandmark || null,
       locationToken: randomToken(12),
@@ -92,12 +101,22 @@ export async function updatePickup(_prev: FormState, formData: FormData): Promis
     ),
   });
   for (const d of pending) {
-    const km = roadDistanceKm(parsed.data.pickupLat, parsed.data.pickupLng, d.dropLat!, d.dropLng!);
+    const { km } = await roadDistance(parsed.data.pickupLat, parsed.data.pickupLng, d.dropLat!, d.dropLng!);
     await db
       .update(deliveries)
-      .set(quote(km, { heavy: d.heavy, night: d.night }))
+      .set(quote(km, optsOf(d)))
       .where(eq(deliveries.id, d.id));
   }
   revalidatePath("/commercant");
   return { ok: "Position du commerce enregistrée." };
+}
+
+/** Acceptation des conditions de service par un commerçant déjà inscrit. */
+export async function acceptTerms() {
+  const merchant = await requireUser("MERCHANT");
+  await db
+    .update(users)
+    .set({ termsAcceptedAt: new Date(), termsVersion: TERMS_VERSION })
+    .where(eq(users.id, merchant.id));
+  revalidatePath("/commercant", "layout");
 }

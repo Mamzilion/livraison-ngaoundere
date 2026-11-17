@@ -44,6 +44,10 @@ export const users = pgTable("users", {
   pickupLandmark: text("pickup_landmark"),
   pickupLat: doublePrecision("pickup_lat"),
   pickupLng: doublePrecision("pickup_lng"),
+
+  // Acceptation des conditions de service
+  termsAcceptedAt: timestamp("terms_accepted_at", { withTimezone: true }),
+  termsVersion: text("terms_version"),
 });
 
 export const deliveries = pgTable(
@@ -61,7 +65,10 @@ export const deliveries = pgTable(
     customerPhone: text("customer_phone").notNull(),
     packageDesc: text("package_desc").notNull(),
     amountToCollect: integer("amount_to_collect").notNull().default(0), // FCFA
-    heavy: boolean("heavy").notNull().default(false),
+    heavy: boolean("heavy").notNull().default(false), // poids > 5 kg (gardé pour les anciennes courses)
+    weightKg: doublePrecision("weight_kg"), // poids estimé du colis
+    declaredValue: integer("declared_value"), // FCFA, valeur déclarée (garantie étendue)
+    insuranceFee: integer("insurance_fee").notNull().default(0), // FCFA, contribution de garantie
     night: boolean("night").notNull().default(false),
 
     locationToken: text("location_token").notNull().unique(),

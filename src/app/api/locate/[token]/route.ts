@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { eq } from "drizzle-orm";
 import { db, deliveries } from "@/lib/db";
-import { computeDriverPay, computePrice, roadDistanceKm } from "@/lib/pricing";
+import { computeDriverPay, computePrice, optsOf } from "@/lib/pricing";
+import { roadDistance } from "@/lib/routing";
 
 const bodySchema = z.object({
   lat: z.number().min(-90).max(90).optional(),
@@ -34,9 +35,9 @@ export async function POST(req: Request, { params }: { params: Promise<{ token: 
   let price = d.price;
   let driverPay = d.driverPay;
   if (lat != null && lng != null && m.pickupLat != null && m.pickupLng != null) {
-    distanceKm = roadDistanceKm(m.pickupLat, m.pickupLng, lat, lng);
-    price = computePrice(distanceKm, { heavy: d.heavy, night: d.night });
-    driverPay = computeDriverPay(distanceKm, { heavy: d.heavy, night: d.night });
+    distanceKm = (await roadDistance(m.pickupLat, m.pickupLng, lat, lng)).km;
+    price = computePrice(distanceKm, optsOf(d));
+    driverPay = computeDriverPay(distanceKm, optsOf(d));
   }
 
   const hasGps = lat != null && lng != null;

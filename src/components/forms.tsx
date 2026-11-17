@@ -1,10 +1,12 @@
 "use client";
 
-import { useActionState } from "react";
+import Link from "next/link";
+import { useActionState, useState } from "react";
 import { login, registerMerchant, requestPasswordReset, resetPassword } from "@/app/actions/auth";
 import { createDelivery, updatePickup } from "@/app/actions/merchant";
 import { adminSetDropLocation, createDriver, createResetLink } from "@/app/actions/admin";
-import { PRICING } from "@/lib/pricing";
+import { GUARANTEE, WEIGHT, insuranceFee, weightSupplement } from "@/lib/pricing";
+import { TERMS_SUMMARY } from "@/lib/terms";
 import { useT } from "./i18n";
 import { LocateFields, SubmitButton } from "./client";
 
@@ -39,6 +41,7 @@ export function LoginForm({ next }: { next?: string }) {
 export function RegisterForm() {
   const [state, action] = useActionState(registerMerchant, undefined);
   const t = useT();
+  const shown = state?.error === "terms" ? { error: t("auth.termsRequired") } : state;
   return (
     <form action={action} className="space-y-4">
       <div>
@@ -69,7 +72,12 @@ export function RegisterForm() {
       </div>
       <div className="rounded-2xl bg-brand-50 p-4 text-sm text-brand-800">{t("auth.gpsHint")}</div>
       <LocateFields />
-      <Messages state={state} />
+      <TermsBox />
+      <label className="flex cursor-pointer items-start gap-3 rounded-2xl border border-line bg-cream p-4 text-sm transition has-[:checked]:border-brand-600 has-[:checked]:bg-brand-50">
+        <input type="checkbox" name="terms" required className="mt-0.5 h-5 w-5 shrink-0 accent-brand-600" />
+        <span>{t("auth.termsCheck")}</span>
+      </label>
+      <Messages state={shown} />
       <SubmitButton pendingText={t("common.wait")}>{t("auth.submitRegister")}</SubmitButton>
     </form>
   );
@@ -78,6 +86,19 @@ export function RegisterForm() {
 export function NewDeliveryForm() {
   const [state, action] = useActionState(createDelivery, undefined);
   const t = useT();
+  const [weight, setWeight] = useState("");
+  const [value, setValue] = useState("");
+  const w = Number(weight.replace(",", ".")) || 0;
+  const extra = weightSupplement(w);
+  const fee = insuranceFee(Number(value) || 0);
+  const errorText =
+    state?.error === "terms"
+      ? t("m.termsNeeded")
+      : state?.error?.startsWith("max:")
+        ? t("m.weightMax")
+        : state?.error?.startsWith("maxValue:")
+          ? t("m.declaredMax")
+          : state?.error;
   return (
     <form action={action} className="space-y-4">
       <div>
@@ -100,11 +121,44 @@ export function NewDeliveryForm() {
         <label className="label" htmlFor="dropLandmark">{t("m.landmark")}</label>
         <input className="input" id="dropLandmark" name="dropLandmark" placeholder={t("m.landmarkPh")} />
       </div>
-      <label className="flex cursor-pointer items-center gap-3 rounded-2xl border border-line bg-cream p-4 text-sm transition has-[:checked]:border-brand-600 has-[:checked]:bg-brand-50">
-        <input type="checkbox" name="heavy" className="h-5 w-5 accent-brand-600" />
-        {t("m.heavy")} (+{PRICING.heavySupplement} FCFA)
-      </label>
-      <Messages state={state} />
+      <div>
+        <label className="label" htmlFor="weightKg">{t("m.weight")}</label>
+        <input
+          className="input"
+          id="weightKg"
+          name="weightKg"
+          type="number"
+          min={0}
+          max={WEIGHT.maxKg}
+          step={0.5}
+          inputMode="decimal"
+          placeholder={`≤ ${WEIGHT.includedKg}`}
+          value={weight}
+          onChange={(e) => setWeight(e.target.value)}
+        />
+        <p className={`mt-1.5 text-xs ${w > WEIGHT.maxKg ? "font-semibold text-rose-700" : "text-muted"}`}>
+          {w > WEIGHT.maxKg ? t("m.weightMax") : extra > 0 ? t("m.weightExtra", { fee: extra }) : t("m.weightHint")}
+        </p>
+      </div>
+      <div>
+        <label className="label" htmlFor="declaredValue">{t("m.declared")}</label>
+        <input
+          className="input"
+          id="declaredValue"
+          name="declaredValue"
+          type="number"
+          min={0}
+          max={GUARANTEE.maxDeclared}
+          step={500}
+          inputMode="numeric"
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+        />
+        <p className={`mt-1.5 text-xs ${fee > 0 ? "font-semibold text-brand-700" : "text-muted"}`}>
+          {fee > 0 ? t("m.guaranteeFee", { fee }) : t("m.declaredHint")}
+        </p>
+      </div>
+      <Messages state={errorText ? { error: errorText } : state} />
       <SubmitButton pendingText={t("common.wait")}>{t("m.create")}</SubmitButton>
       <p className="text-center text-xs text-muted">{t("m.createHint")}</p>
     </form>
@@ -229,5 +283,23 @@ export function ResetLinkForm({ userId }: { userId: string }) {
       <SubmitButton className="btn-ghost px-3 py-2 text-xs" pendingText="…">Mot de passe</SubmitButton>
       {state?.error && <p className="mt-1 text-xs text-rose-700">{state.error}</p>}
     </form>
+  );
+}
+
+/** Résumé des conditions de service, avec lien vers le texte complet. */
+export function TermsBox() {
+  const t = useT();
+  return (
+    <div className="space-y-2 rounded-2xl border border-line bg-paper p-4 text-sm">
+      <div className="display text-base">{t("m.termsTitle")}</div>
+      <ul className="space-y-1.5 text-ink/80">
+        {TERMS_SUMMARY.map((s) => (
+          <li key={s} className="flex gap-2"><span className="text-brand-600">✦</span>{s}</li>
+        ))}
+      </ul>
+      <Link href="/conditions" target="_blank" className="inline-block font-semibold text-brand-700 underline">
+        {t("m.termsRead")}
+      </Link>
+    </div>
   );
 }
