@@ -8,8 +8,8 @@
     "vercel-build": "tsx scripts/migrate.ts && next build",
     "start": "next start",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "tsx scripts/migrate.ts",
-    "seed": "tsx scripts/seed.ts",
+    "db:migrate": "tsx --env-file=.env scripts/migrate.ts",
+    "seed": "tsx --env-file=.env scripts/seed.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
